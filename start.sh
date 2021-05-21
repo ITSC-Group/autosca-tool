@@ -4,7 +4,7 @@ SUT_HOST="localhost"
 CAPTURE_HOST="localhost"
 SUT_PORT=443
 SUT_NAME="openssl-1_1_1g-server"
-SUT_INTERFACE="docker0"
+SUT_INTERFACE=""
 LATENCY=""
 TAG=""
 USE_TLS_ATTACKER=0
@@ -22,7 +22,7 @@ set -e
 
 usage()
 {
-    echo 'usage example: ./start.sh --tag googletest --host www.google.com --interface enp0s3 --clientarguments "--repetitions 20 --noskip"'
+    echo 'usage example: ./start.sh --tlsattacker --tag googletest --host www.google.com --interface enp3s0 --clientarguments "--repetitions 20 --noskip"'
 }
 
 ALL_PARAMETERS=$*
@@ -77,12 +77,12 @@ done
 
 # shellcheck disable=SC2086
 if [ "$TAG" ]; then
-    SANITIZED_SUT_NAME=$(echo $TAG | tr -dc '[:alnum:]')
+    SANITIZED_SUT_NAME=$(echo $TAG | tr -dc '[:alnum:].-_')
 else
-    SANITIZED_SUT_NAME=$(echo $SUT_NAME | tr -dc '[:alnum:]')
+    SANITIZED_SUT_NAME=$(echo $SUT_NAME | tr -dc '[:alnum:].-_')
 fi
 if [ "$DATASET_FOLDER" ]; then
-    FOLDER="$DATASET_FOLDER/$(date --iso-8601)-$SANITIZED_SUT_NAME"
+    FOLDER="$DATASET_FOLDER/$SANITIZED_SUT_NAME"
 else
     FOLDER="$TOOL_FOLDER/datasets/$(date --iso-8601)-$SANITIZED_SUT_NAME"
 fi
@@ -131,7 +131,8 @@ if [ "$START_DOCKER" = "1" ]; then
     fi
     echo "SUT started on $SUT_HOST:$SUT_PORT"
 else
-    echo "Assuming the system under test (SUT) is already running at $SUT_HOST:$SUT_PORT on interface $SUT_INTERFACE"
+    echo "Assuming the system under test (SUT) is already running at $SUT_HOST:$SUT_PORT"
+    CAPTURE_HOST=$SUT_HOST
 fi
 
 echo "## Server Hostname/IP and Port" >> "$CONFIG"
@@ -142,9 +143,22 @@ if [ "$USE_TLS_ATTACKER" = "0" ]; then
     echo "host=$SUT_HOST" >> "$TOOL_FOLDER/scriptable_client/config/$SANITIZED_SUT_NAME.conf"
 fi
 
+if [ -n "$SUT_INTERFACE" ]; then
+    echo "Starting packet capture on $SUT_INTERFACE given by parameter --interface"
+elif [ "$START_DOCKER" = "1" ]; then
+    SUT_INTERFACE="docker0"
+    echo "Starting packet capture on the default docker interface $SUT_INTERFACE"
+else
+    SUT_INTERFACE=$(ip route | grep '^default' | cut -d' ' -f5)
+    echo "Starting packet capture on the default network interface $SUT_INTERFACE"
+fi
+if [ -z "$SUT_INTERFACE" ]; then
+    echo "Invalid packet capture interface, aborting"
+    exit 1
+fi
+
 echo "Special privileges are needed to capture network traffic and add delays to interfaces"
 echo "You may need to use the noroot.sh script to allow non-root users to do that"
-echo "Capturing on interface $SUT_INTERFACE"
 echo "## Capturing network traffic" >> "$CONFIG"
 echo "From and to $CAPTURE_HOST" >> "$CONFIG"
 echo "On interface $SUT_INTERFACE" >> "$CONFIG"

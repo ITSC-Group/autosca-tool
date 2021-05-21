@@ -4,11 +4,11 @@ from setuptools import setup, find_packages
 
 DISTNAME = 'pycsca'
 DESCRIPTION = 'Side Channel Analysis'
-MAINTAINER = 'AutoSca'
-MAINTAINER_EMAIL = 'prithag@mail.uni-paderborn.de'
+MAINTAINER = '<redacted>'
+MAINTAINER_EMAIL = '<redacted>'
 VERSION = "1.0"
 LICENSE = "Apache"
-DOWNLOAD_URL = "https://git.cs.uni-paderborn.de/autosca/py-sca.git"
+DOWNLOAD_URL = "<redacted>"
 PROJECT_ROOT = dirname(realpath(__file__))
 REQUIREMENTS_FILE = join(PROJECT_ROOT, 'requirements.txt')
 

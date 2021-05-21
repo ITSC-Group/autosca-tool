@@ -41,7 +41,7 @@ public class BleichenbacherGenerator {
     public void start() {
         PublicKey publicKey = CertificateFetcher.fetchServerPublicKey(generatorConfig.createConfig());
         if (publicKey == null) {
-            throw new RuntimeException("Could not fetch publicKey - there is probbably something wrong with the config?");
+            throw new RuntimeException("Could not fetch publicKey - there is probably something wrong with the config?");
         }
         if (!(publicKey instanceof RSAPublicKey)) {
             throw new RuntimeException("The received public key is not an RSA publicKey?");

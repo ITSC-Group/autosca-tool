@@ -1,37 +1,36 @@
 #! /bin/bash
-REPETITIONS=50000
-DATASETFOLDER="/home/datasets"
-tc qdisc replace dev docker0 root netem delay "2ms"
-./start.sh --name openssl-server:1.1.1i --docker --tlsattacker --port 44441 --datasetfolder $DATASETFOLDER --dockerarguments "-v cert-data:/cert/:ro,nocopy" --clientarguments "--repetitions $REPETITIONS --skip --noskip" --serverarguments "-key /cert/rsa2048key.pem -cert /cert/rsa2048cert.pem" &
-./start.sh --name openssl-0_9_7a-server --docker --tlsattacker --port 44442 --datasetfolder $DATASETFOLDER --dockerarguments "-v cert-data:/cert/:ro,nocopy" --clientarguments "--repetitions $REPETITIONS --skip --noskip" --serverarguments "-key /cert/rsa2048key.pem -cert /cert/rsa2048cert.pem" &
-./start.sh --name openssl-0_9_7b-server --docker --tlsattacker --port 44443 --datasetfolder $DATASETFOLDER --dockerarguments "-v cert-data:/cert/:ro,nocopy" --clientarguments "--repetitions $REPETITIONS --skip --noskip" --serverarguments "-key /cert/rsa2048key.pem -cert /cert/rsa2048cert.pem" &
-./start.sh --tag damnvulnerableopensslserver-fast --name apollolv/damnvulnerableopenssl-server --docker --tlsattacker --port 44451 --datasetfolder $DATASETFOLDER --clientarguments "--repetitions $REPETITIONS --skip --noskip" &
-./start.sh --tag damnvulnerableopensslserver-full --name apollolv/damnvulnerableopenssl-server --docker --tlsattacker --port 44452 --datasetfolder $DATASETFOLDER --clientarguments "--repetitions $REPETITIONS --skip --noskip --manipulations FULL" &
-./start.sh --name matrixssl-server:3.7.2 --docker --tlsattacker --port 44461 --datasetfolder $DATASETFOLDER --clientarguments "--repetitions $REPETITIONS --skip --noskip" &
-./start.sh --name matrixssl-server:4.3.0 --docker --tlsattacker --port 44463 --datasetfolder $DATASETFOLDER --clientarguments "--repetitions $REPETITIONS --skip --noskip" &
-./start.sh --name bouncycastle-server:1.58 --docker --tlsattacker --port 44471 --datasetfolder $DATASETFOLDER --dockerarguments "-v cert-data:/cert/:ro,nocopy" --clientarguments "--repetitions $REPETITIONS --skip --noskip" --serverarguments "4433 /cert/keys.jks password rsa2048 /cert/keys.jks password ec256" &
-./start.sh --name bouncycastle-server:1.64 --docker --tlsattacker --port 44472 --datasetfolder $DATASETFOLDER --dockerarguments "-v cert-data:/cert/:ro,nocopy" --clientarguments "--repetitions $REPETITIONS --skip --noskip" --serverarguments "4433 /cert/keys.jks password rsa2048 /cert/keys.jks password ec256" &
-./start.sh --name bouncycastle-server:1.57 --docker --tlsattacker --port 44473 --datasetfolder $DATASETFOLDER --dockerarguments "-v cert-data:/cert/:ro,nocopy" --clientarguments "--repetitions $REPETITIONS --skip --noskip" --serverarguments "4433 /cert/keys.jks password rsa2048 /cert/keys.jks password ec256" &
-./start.sh --name bouncycastle-server:1.56 --docker --tlsattacker --port 44474 --datasetfolder $DATASETFOLDER --dockerarguments "-v cert-data:/cert/:ro,nocopy" --clientarguments "--repetitions $REPETITIONS --skip --noskip" --serverarguments "4433 /cert/keys.jks password rsa2048 /cert/keys.jks password ec256" &
-./start.sh --name jssetls-jre-9.0.4-12-bc-1-59-server --docker --tlsattacker --port 44481 --datasetfolder $DATASETFOLDER --dockerarguments "-v cert-data:/cert/:ro,nocopy" --clientarguments "--repetitions $REPETITIONS --skip --noskip" --serverarguments "4433 /cert/keys.jks password rsa2048" &
-./start.sh --name mbedtls-2.13.0-server --docker --tlsattacker --port 44491 --datasetfolder $DATASETFOLDER --dockerarguments "-v cert-data:/cert/:ro,nocopy" --clientarguments "--repetitions $REPETITIONS --skip --noskip" --serverarguments "crt_file=/cert/rsa2048cert.pem key_file=/cert/rsa2048key.pem server_port=4433" &
-./start.sh --name mbedtls-server:2.25.0 --docker --tlsattacker --port 44494 --datasetfolder $DATASETFOLDER --dockerarguments "-v cert-data:/cert/:ro,nocopy" --clientarguments "--repetitions $REPETITIONS --skip --noskip" --serverarguments "crt_file=/cert/rsa2048cert.pem key_file=/cert/rsa2048key.pem server_port=4433" &
-./start.sh --name polarssl-1.0.0-server --docker --tlsattacker --port 44492 --datasetfolder $DATASETFOLDER --dockerarguments "-v cert-data:/cert/:ro,nocopy" --clientarguments "--repetitions $REPETITIONS --skip --noskip" --serverarguments "crt_file=/cert/rsa2048cert.pem key_file=/cert/rsa2048key.pem server_port=4433" &
-./start.sh --name wolfssl-server:4.4.0-stable --docker --tlsattacker --port 44601 --datasetfolder $DATASETFOLDER --dockerarguments "-v cert-data:/cert/:ro,nocopy" --clientarguments "--repetitions $REPETITIONS --skip --noskip" --serverarguments "-p 4433 -c /cert/rsa2048cert.pem -k /cert/rsa2048key.pem -i -b -d -x -l TLS_RSA_WITH_3DES_EDE_CBC_SHA:TLS_RSA_WITH_AES_128_CBC_SHA:TLS_RSA_WITH_AES_128_CBC_SHA256:TLS_RSA_WITH_AES_256_CBC_SHA256" &
-./start.sh --name gnutls-3_7_0-server --docker --tlsattacker --port 44621 --datasetfolder $DATASETFOLDER --dockerarguments "-v cert-data:/cert/:ro,nocopy" --clientarguments "--repetitions $REPETITIONS --skip --noskip" --serverarguments "--port=4433 --x509certfile=/cert/rsa2048cert.pem --x509keyfile=/cert/rsa2048key.pem --disable-client-cert" &
-./start.sh --name boringssl-server:chromium-stable --docker --tlsattacker --port 44651 --datasetfolder $DATASETFOLDER --dockerarguments "-v cert-data:/cert/:ro,nocopy" --clientarguments "--repetitions $REPETITIONS --skip --noskip" --serverarguments "-accept 4433 -cert /cert/rsa2048cert.pem -key /cert/rsa2048key.pem -loop" &
-./start.sh --name libressl-server:3.2.3 --docker --tlsattacker --port 44661 --datasetfolder $DATASETFOLDER --dockerarguments "-v cert-data:/cert/:ro,nocopy" --clientarguments "--repetitions $REPETITIONS --skip --noskip"  --serverarguments "-accept 4433 -key /cert/rsa2048key.pem -cert /cert/rsa2048cert.pem" &
-./start.sh --name bearssl-server:0.6 --docker --tlsattacker --port 44671 --datasetfolder $DATASETFOLDER --dockerarguments "-v cert-data:/cert/:ro,nocopy" --clientarguments "--repetitions $REPETITIONS --skip --noskip" --serverarguments "-p 4433 -cert /cert/rsa2048cert.pem -key /cert/rsa2048key.pem" &
-./start.sh --name botan-server:2.17.3 --docker --tlsattacker --port 44681 --datasetfolder $DATASETFOLDER --dockerarguments "-v cert-data:/cert/:ro,nocopy" --clientarguments "--repetitions $REPETITIONS --skip --noskip --nosni" --serverarguments "/cert/rsa2048cert.pem /cert/rsa2048key.pem --port=4433 --policy=/compat.txt" &
-./start.sh --name s2n-server:0.10.24 --docker --tlsattacker --port 44671 --datasetfolder $DATASETFOLDER --dockerarguments "-v cert-data:/cert/:ro,nocopy" --clientarguments "--repetitions $REPETITIONS --skip --noskip" --serverarguments "localhost 4433 --cert /cert/rsa2048cert.pem --key /cert/rsa2048key.pem --insecure" &
-./start.sh --name tlslite_ng-server:0.8.0-alpha40 --docker --tlsattacker --port 44681 --datasetfolder $DATASETFOLDER --dockerarguments "-v cert-data:/cert/:ro,nocopy" --clientarguments "--repetitions $REPETITIONS --skip --noskip" --serverarguments "-c /cert/rsa2048cert.pem -k /cert/rsa2048key.pem 0.0.0.0:4433" &
-./start.sh --name ocamltls-server:0.12.8 --docker --tlsattacker --port 44691 --datasetfolder $DATASETFOLDER --dockerarguments "-v cert-data:/cert/:ro,nocopy" --clientarguments "--repetitions $REPETITIONS --skip --noskip" &
-
-REPETITIONS=500
-./start.sh --name imitation-server:6.0 --tag "cisco_ace" --docker --tlsattacker --port 44501 --datasetfolder $DATASETFOLDER --clientarguments "--repetitions $REPETITIONS --noskip --wait 1500" --serverarguments "--configFile=/config/base.conf --configFile=/config/cisco_ace.conf" &
-./start.sh --name imitation-server:6.0 --tag "f5_v1" --docker --tlsattacker --port 44502 --datasetfolder $DATASETFOLDER --clientarguments "--repetitions $REPETITIONS --skip --wait 1500" --serverarguments "--configFile=/config/base.conf --configFile=/config/f5_v1.conf" &
-./start.sh --name imitation-server:6.0 --tag "facebook_v2" --docker --tlsattacker --port 44503 --datasetfolder $DATASETFOLDER --clientarguments "--repetitions $REPETITIONS --skip --wait 1500 --timeout 200" --serverarguments "--configFile=/config/base.conf --configFile=/config/facebook_v2.conf" &
-./start.sh --name imitation-server:6.0 --tag "netscaler_gcm" --docker --tlsattacker --port 44504 --datasetfolder $DATASETFOLDER --clientarguments "--repetitions $REPETITIONS --noskip --wait 1500" --serverarguments "--configFile=/config/base.conf --configFile=/config/netscaler_gcm.conf" &
-./start.sh --name imitation-server:6.0 --tag "pan_os" --docker --tlsattacker --port 44505 --datasetfolder $DATASETFOLDER --clientarguments "--repetitions $REPETITIONS --noskip --wait 1500" --serverarguments "--configFile=/config/base.conf --configFile=/config/pan_os.conf" &
-
-wait
+# Non-parallelized skip experiment
+#./start.sh --docker --name openssl-1_1_1g-server --tag nonparallelskip --port 4433 --latency 10ms --clientarguments --repetitions 10 --skip --processes 1
+# Parallelized skip experiment
+#./start.sh --docker --name openssl-1_1_1g-server --tag parallelskip --port 4433 --latency 10ms --clientarguments --repetitions 10 --skip --processes 4
+# 3000er dataset non-vulnerable
+#./start.sh --docker --name openssl-1_1_1g-server --port 4433 --latency 10ms --clientarguments --repetitions 3000 --noskip
+# 3000er dataset vulnerable
+#./start.sh --docker --name apollolv/damnvulnerableopenssl-server --port 4433 --latency 10ms --clientarguments --repetitions 3000 --noskip
+# 300er dataset machine learning failure
+#./start.sh --docker --name apollolv/damnvulnerableopenssl-server --tag learningfailure --port 4433 --latency 10ms --clientarguments --repetitions 300 --noskip
+# quick functionality test
+#./start.sh --docker --name apollolv/damnvulnerableopenssl-server --tag quicktest --port 4433 --latency 10ms --clientarguments --repetitions 20 --noskip
+# external host test
+#./start.sh --tag googletest --host www.google.com --interface enp0s3 --clientarguments --repetitions 20 --noskip --wait 1 --processes 1
+# Skip and Noskip quicktest
+#./start.sh --tag skiptest --docker --name openssl-1_1_1e-server --port 4433 --latency 10ms --clientarguments --repetitions 20 --skip --noskip --processes 1
+# 6000er dataset non-vulnerable including skipping
+#./start.sh --tag opensslskipping --docker --name openssl-1_1_1e-server --port 4433 --latency 10ms --clientarguments --repetitions 6000 --noskip --skip --processes 1
+# 6000er dataset vulnerable including skipping
+#./start.sh --tag vulnerableskipping --docker --name apollolv/damnvulnerableopenssl-server --port 4433 --latency 10ms --clientarguments --repetitions 6000 --noskip --skip --processes 1
+# MatrixSSL 3.4.0 CVE 2016-6883 dataset
+#./start.sh --docker --name matrixssl-3-7.2-server --port 4433 --latency 10ms --skipvolume --clientarguments --repetitions 10000 --noskip
+# OpenSSL 0.9.7a Klima-Pokorny-Rosa dataset
+#./start.sh --docker --name openssl-0_9_7a-server --port 4433 --latency 10ms --clientarguments --repetitions 10000 --skip --noskip --processes 1
+# DamnvulnerableOpenSSL dataset
+#./start.sh --docker --name apollolv/damnvulnerableopenssl-server --port 4433 --latency 10ms --clientarguments --repetitions 10000 --skip --noskip --processes 1
+# OpenSSL 1.1.1g dataset
+#./start.sh --docker --name openssl-1_1_1g-server --port 4433 --latency 10ms --clientarguments --repetitions 10000 --skip --noskip --processes 1
+# TLS attacker test
+#./start.sh --docker --tlsattacker --name openssl-1_1_1g-server --port 4433 --latency 5ms --skiplearning --clientarguments "--repetitions 300 --skip --noskip" --serverarguments "-key /cert/rsa2048key.pem -cert /cert/rsa2048cert.pem"
+# Parallel docker port assignment test
+tc qdisc replace dev docker0 root netem delay "5ms"
+./start.sh --name openssl-1_1_1g-server --docker --tlsattacker --skiplearning --port 44444 --clientarguments "--repetitions 100 --skip --noskip" --serverarguments "-key /cert/rsa2048key.pem -cert /cert/rsa2048cert.pem" &
+./start.sh --name openssl-0_9_7a-server --docker --tlsattacker --skiplearning --port 33333 --clientarguments "--repetitions 100 --skip --noskip" --serverarguments "-key /cert/rsa2048key.pem -cert /cert/rsa2048cert.pem"
+tc qdisc delete dev docker0 root
