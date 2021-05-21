@@ -16,10 +16,10 @@ def progress_bar(count, total, status=''):
     sys.stdout.flush()
 
 
-def print_dictionary(dictionary):
+def print_dictionary(dictionary, sep='\n'):
     output = "\n"
     for key, value in dictionary.items():
-        output = output + str(key) + " => " + str(value) + "\n"
+        output = output + str(key) + " => " + str(value) + sep
     return output
 
 
@@ -42,4 +42,6 @@ def setup_logging(log_path=None, level=logging.DEBUG):
                         datefmt='%Y-%m-%d %H:%M:%S')
     logger = logging.getLogger("SetupLogger")
     logger.info("log file path: {}".format(log_path))
+    logging.getLogger("matplotlib").setLevel(logging.ERROR)
+
     # logging.captureWarnings(True)

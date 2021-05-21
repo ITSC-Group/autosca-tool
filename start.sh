@@ -11,6 +11,7 @@ USE_TLS_ATTACKER=0
 START_DOCKER=0
 SKIP_LEARNING=0
 ALL_PARAMETERS=""
+CROSSVALIDATION_TECHNIQUE="mccv"
 CROSSVALIDATION_ITERATIONS=30
 HYPERPARAMETER_ITERATIONS=10
 CLIENT_ARGUMENTS=""
@@ -236,7 +237,7 @@ if [ "$SKIP_LEARNING" = "0" ]; then
     echo "Doing $HYPERPARAMETER_ITERATIONS hyperparameter optimization iterations" >> "$CONFIG"
 
     START_TIME=$(date +%s)
-    pipenv run python3 train_models.py --folder="$FOLDER" --cv_iterations=$CROSSVALIDATION_ITERATIONS --iterations=$HYPERPARAMETER_ITERATIONS 2>&1 | tee "$FOLDER/Classification Model Training.log"
+    pipenv run python3 train_models.py --folder="$FOLDER" --cv_technique=$CROSSVALIDATION_TECHNIQUE --cv_iterations=$CROSSVALIDATION_ITERATIONS --iterations=$HYPERPARAMETER_ITERATIONS 2>&1 | tee "$FOLDER/Classification Model Training.log"
     END_TIME=$(date +%s)
     DURATION="$(($END_TIME-$START_TIME))"
     echo "Finished classification model training, execution took $DURATION seconds"
@@ -244,6 +245,6 @@ if [ "$SKIP_LEARNING" = "0" ]; then
     echo "$DURATION seconds" >> "$CONFIG"
 
     echo "Plotting the machine learning results"
-    pipenv run python3 plot_results.py --folder="$FOLDER" --cv_iterations=$CROSSVALIDATION_ITERATIONS 2>&1 | tee "$FOLDER/Classification Model Plotting.log"
+    pipenv run python3 plot_results.py --folder="$FOLDER" --cv_technique=$CROSSVALIDATION_TECHNIQUE --cv_iterations=$CROSSVALIDATION_ITERATIONS 2>&1 | tee "$FOLDER/Classification Model Plotting.log"
     echo "Finished plotting"
 fi

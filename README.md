@@ -1,7 +1,6 @@
-# Bleichenbacher Side-Channel Detector Prototype
+# Automated Bleichenbacher Side-Channel Analysis Tool
 
 This tool is able to automatically test a TLS server for Bleichenbacher-like padding side channels.
-It is a meta-project with all required tools as submodules and includes helpful bash scripts.
 
 ## Installation
 First, ensure that the following packages (and a working C compiler) are installed:
@@ -10,12 +9,12 @@ First, ensure that the following packages (and a working C compiler) are install
 
 Then run the shell script `setup.sh` in a terminal of your choice.
 It should take care of the entire setup for you.
-If you want to run the servers as docker containers, you also need to manually set up a docker environment.
+If you want to run the TLS servers as docker containers, you also need to manually set up a docker environment.
 
 ## Usage
 You can execute the following command to check a local TLS server and test if every component works:
 
-```./start.sh --docker --name apollolv/damnvulnerableopenssl-server --tag quicktest --port 4433 --latency 10ms --clientarguments --repetitions 20 --noskip```
+```./start.sh --docker --name apollolv/damnvulnerableopenssl-server --tag quicktest --port 4433 --latency 10ms --clientarguments "--repetitions 20 --noskip"```
 
 You should get successful execution until the actual machine learning starts.
 This is indicated by the message `Starting classification model learning`.
@@ -34,7 +33,7 @@ In this case, we want the client to send 20 requests (`--repetitions`) and to ex
 ### Remote example
 The following example will check a remote server for Bleichenbacher side channels:
 
-```./start.sh --tag googletest --host www.google.com --interface enp0s3 --clientarguments --repetitions 20 --noskip --wait 1 --processes 1```
+```./start.sh --tag googletest --host www.google.com --interface enp0s3 --clientarguments "--repetitions 20 --noskip --wait 1 --processes 1"```
 
 You may need to adjust the `--interface` parameter to your local network interface name.
 We are also using the `--wait` parameter to instruct the client to wait 1 second between each request.
