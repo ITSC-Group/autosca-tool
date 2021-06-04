@@ -78,7 +78,7 @@ public class GeneratorConfig extends TLSDelegateConfig {
     private int waitingtime = 0;
 
     @Parameter(names = "--twoclass", description = "Instead of randomly choosing between all vectors, choose only between correct padding and wrong version number")
-    private boolean twoclass = 0;
+    private boolean twoclass = false;
 
 
     /**
