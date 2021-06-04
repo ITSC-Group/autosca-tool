@@ -83,7 +83,7 @@ else
     SANITIZED_SUT_NAME=$(echo $SUT_NAME | tr -dc '[:alnum:].-_')
 fi
 if [ "$DATASET_FOLDER" ]; then
-    FOLDER="$DATASET_FOLDER/$SANITIZED_SUT_NAME"
+    FOLDER="$DATASET_FOLDER/$(date --iso-8601)-$SANITIZED_SUT_NAME"
 else
     FOLDER="$TOOL_FOLDER/datasets/$(date --iso-8601)-$SANITIZED_SUT_NAME"
 fi
