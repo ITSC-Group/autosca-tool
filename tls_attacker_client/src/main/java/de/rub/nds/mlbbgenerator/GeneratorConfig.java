@@ -197,11 +197,11 @@ public class GeneratorConfig extends TLSDelegateConfig {
         this.waitingtime = waitingtime;
     }
 
-    public boolean isTwoclass(){
+    public boolean isTwoclass() {
         return twoclass;
     }
 
-    public void set Twoclass(boolean twoclass){
+    public void setTwoclass(boolean twoclass) {
         this.twoclass = twoclass;
     }
 
