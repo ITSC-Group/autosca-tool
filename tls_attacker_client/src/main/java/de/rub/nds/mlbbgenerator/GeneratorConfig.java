@@ -77,6 +77,8 @@ public class GeneratorConfig extends TLSDelegateConfig {
     @Parameter(names = "--wait", description = "The number of milliseconds to wait idly between requests")
     private int waitingtime = 0;
 
+    @Parameter(names = "--twoclass", description = "Instead of randomly choosing between all vectors, choose only between correct padding and wrong version number")
+    private boolean twoclass = 0;
 
 
     /**
@@ -194,4 +196,13 @@ public class GeneratorConfig extends TLSDelegateConfig {
     public void setWaitingtime(int waitingtime) {
         this.waitingtime = waitingtime;
     }
+
+    public boolean isTwoclass(){
+        return twoclass;
+    }
+
+    public void set Twoclass(boolean twoclass){
+        this.twoclass = twoclass;
+    }
+
 }

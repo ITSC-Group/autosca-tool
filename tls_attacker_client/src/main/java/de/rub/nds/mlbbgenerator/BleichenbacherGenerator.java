@@ -65,10 +65,19 @@ public class BleichenbacherGenerator {
 
         for (int i = 0; i < generatorConfig.getIterations(); i++)//How many itereations do we want to do?
         {
-            //choose a vector at random
-            //ok since timing is of the table i just create the vectors life - if you want to have timing you need to randomize before you prepare
-            //and be more careful in generally here
-            Pkcs1Vector vector = vectors.get(r.nextInt(vectors.size() - 1));
+            if(!generatorConfig.isTwoclass()){
+                // Choose a vector at random
+                Pkcs1Vector vector = vectors.get(r.nextInt(vectors.size() - 1));
+            }else{
+                if(r.nextBoolean()){
+                    // Choose the bad PMS version number
+                    Pkcs1Vector vector = vectors.get(3);
+                }else{
+                    // Choose correct padding
+                    Pkcs1Vector vector = vectors.get(0);
+                }
+            }
+
             byte[] newRandom = new byte[32];
             r.nextBytes(newRandom);
             config.setDefaultClientRandom(newRandom);
