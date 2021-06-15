@@ -7,6 +7,7 @@ Pipfile.lock
 /setup_py2ex.py
 /scripts/output/
 tlsSecretFile.txt
+TlsTestToolUserManual.pdf
 .idea/
 
 # Created by https://www.toptal.com/developers/gitignore/api/python,pycharm,java,intellij
