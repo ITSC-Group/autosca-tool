@@ -96,8 +96,8 @@ class FeatureExtractor:
         return packet_extracted_values, packet_column_names
 
     def extract_layer_values(self, layer: Layer, machine_packet_name: str, human_packet_name: str) -> (dict, Dict[str, str]):
-        # Ignore these, they are not interesting for the ML algorithmmm
-        field_ignorelist = ['_raw', '.analysis.', 'time']
+        # Ignore these, they are not interesting for the ML algorithm
+            #    field_ignorelist = ['_raw', '.analysis.', 'time']
         extracted_fields = {}
         extracted_names = {}
         # noinspection PyProtectedMember
