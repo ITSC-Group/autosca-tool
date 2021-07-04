@@ -97,8 +97,7 @@ class FeatureExtractor:
 
     def extract_layer_values(self, layer: Layer, machine_packet_name: str, human_packet_name: str) -> (dict, Dict[str, str]):
         # Ignore these, they are not interesting for the ML algorithm
-            #    field_ignorelist = ['_raw', '.analysis.', 'time']
-        field_ignorelist = []
+        field_ignorelist = ['_raw', '.analysis.', 'time']
         extracted_fields = {}
         extracted_names = {}
         # noinspection PyProtectedMember
@@ -115,7 +114,7 @@ class FeatureExtractor:
 
                 if not type(extracted_field_value) is str:
                     # We have a numeric value we can use
-                    if not any(_ in machine_field_name for _ in field_ignorelist):
+                    if (not any(_ in machine_field_name for _ in field_ignorelist)) or machine_field_name == 'tcp.options.timestamp.tsval' or machine_field_name == 'tcp.time_delta':
                         # The field name does not match anything in the ignore list
                         key = f'{machine_packet_name}:{machine_field_name}'
                         extracted_fields[key] = extracted_field_value
