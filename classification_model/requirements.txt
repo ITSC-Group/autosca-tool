@@ -6,7 +6,9 @@ scikit-learn==0.23.2
 scikit-optimize>=0.4
 pandas>=0.22
 h5py>=2.7
+influxdb>=5.2.2
 python-dateutil>=2.4.1
+python-dateutil
 statsmodels
 matplotlib
 seaborn
