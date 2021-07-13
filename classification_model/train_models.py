@@ -36,6 +36,9 @@ if __name__ == "__main__":
                         help='Number of iteration for parameter optimization')
     parser.add_argument('-se', '--skipexisting', type=bool, default=False,
                         help='Number of iteration for parameter optimization')
+    choices = ['kccv', 'mccv']
+    parser.add_argument('-cvt', '--cv_technique', choices=choices, default='mccv',
+                        help='Cross-Validation Technique to be used for generating evaluation samples')
     args = parser.parse_args()
     cv_iter = int(args.cv_iterations)
     n_iter = int(args.iterations)
