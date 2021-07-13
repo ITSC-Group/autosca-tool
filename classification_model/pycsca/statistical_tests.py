@@ -26,15 +26,12 @@ def corrected_dependent_ttest(x1, x2, n_training_folds, n_test_folds, alpha):
     # Compute the mean of differences
     d_bar = np.mean(diff)
     # compute the variance of differences
-    sigma2 = np.var(diff, ddof=1)
+    sigma2 = np.var(diff)
     # compute the modified variance
     sigma2_mod = sigma2 * (1 / n + n_test_folds / n_training_folds)
     # compute the t_static
     t_static = d_bar / np.sqrt(sigma2_mod)
     # Compute p-value and plot the results
-    p = 2 * t.sf(np.abs(t_static), n - 1)
-    # p = (1 - t.cdf(abs(t_static), n - 1)) * 2
-    # cv = t.ppf(1.0 - alpha, n - 1)
-    if np.isnan(p) or d_bar == 0:
-        p = 1.0
-    return p
+    p = (1 - t.cdf(abs(t_static), n - 1)) * 2
+    cv = t.ppf(1.0 - alpha, n - 1)
+    return t_static, cv, p
