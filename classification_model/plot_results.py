@@ -28,6 +28,9 @@ if __name__ == "__main__":
                              'and that the output files will be written to')
     parser.add_argument('-cv', '--cv_iterations', type=int, default=30,
                         help='Number of iteration for training and testing the models')
+    choices = ['kccv', 'mccv']
+    parser.add_argument('-cvt', '--cv_technique', choices=choices, default='mccv',
+                        help='Cross-Validation Technique to be used for generating evaluation samples')
     args = parser.parse_args()
     cv_iter = int(args.cv_iterations)
     folder = args.folder
