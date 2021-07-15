@@ -2,7 +2,7 @@
 REPETITIONS=2
 DATASET_FOLDER="/home/datasets"
 BEGIN_INDEX=1
-INDEX_AMOUNT=30
+INDEX_AMOUNT=50
 DOMAIN="imitation-server:7.2"
 
 FOLDER="$DATASET_FOLDER/$(date --iso-8601)-1sdelay-$INDEX_AMOUNT"
@@ -33,7 +33,7 @@ scan_domain(){
 }
 
 # initialize a semaphore with a given number of tokens
-open_sem(){
+open_sem(){  
     mkfifo pipe-$$
     exec 3<>pipe-$$
     rm pipe-$$
