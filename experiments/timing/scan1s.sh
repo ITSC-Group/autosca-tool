@@ -1,4 +1,4 @@
-#! /usr/bin/bash
+#! /bin/bash
 REPETITIONS=2
 DATASET_FOLDER="/home/datasets"
 BEGIN_INDEX=1
