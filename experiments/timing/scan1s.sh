@@ -60,7 +60,6 @@ open_sem $N
 x=1
 while [ $x -le $INDEX_AMOUNT ]
 do
-    echo " Anzahl Wiederholungen $x"
     run_with_lock scan_domain "$x"
     x=$(( $x + 1 ))
 done
