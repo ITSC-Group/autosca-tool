@@ -1,5 +1,5 @@
 #! /bin/bash
-REPETITIONS=1000
+REPETITIONS=50000
 DATASETFOLDER="/home/datasets"
 tc qdisc replace dev docker0 root netem delay "2ms"
 ./start.sh --name bearssl-server:0.6 --docker --tlsattacker --port 44671 --datasetfolder $DATASETFOLDER --dockerarguments "-v cert-data:/cert/:ro,nocopy" --clientarguments "--repetitions $REPETITIONS --skip --noskip" --serverarguments "-p 4433 -cert /cert/rsa2048cert.pem -key /cert/rsa2048key.pem" &
