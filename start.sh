@@ -79,9 +79,9 @@ done
 
 # shellcheck disable=SC2086
 if [ "$TAG" ]; then
-    SANITIZED_SUT_NAME=$(echo $TAG | tr -dc '[:alnum:].-_')
+    SANITIZED_SUT_NAME=$(echo $TAG | tr -dc '[:alnum:]._-')
 else
-    SANITIZED_SUT_NAME=$(echo $SUT_NAME | tr -dc '[:alnum:].-_')
+    SANITIZED_SUT_NAME=$(echo $SUT_NAME | tr -dc '[:alnum:]._-')
 fi
 if [ "$DATASET_FOLDER" ]; then
     FOLDER="$DATASET_FOLDER/$(date --iso-8601)-$SANITIZED_SUT_NAME"
