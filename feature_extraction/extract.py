@@ -114,7 +114,7 @@ class FeatureExtractor:
 
                 if not type(extracted_field_value) is str:
                     # We have a numeric value we can use
-                    if not any(_ in machine_field_name for _ in field_ignorelist):
+                    if (not any(_ in machine_field_name for _ in field_ignorelist)) or machine_field_name == 'tcp.options.timestamp.tsval' or machine_field_name == 'tcp.time_delta':
                         # The field name does not match anything in the ignore list
                         key = f'{machine_packet_name}:{machine_field_name}'
                         extracted_fields[key] = extracted_field_value

@@ -1,4 +1,5 @@
 import glob
+import logging
 import math
 import os
 import pickle
@@ -14,27 +15,28 @@ from sklearn.model_selection import ShuffleSplit, learning_curve
 from .classifiers import custom_dict
 from .utils import progress_bar
 
+RANDOM_FOREST_CLASSIFIER = 'RandomForestClassifier'
+
 sns.set(color_codes=True)
 plt.style.use('default')
 
-__all__ = ['custom_dict', 'fig_param', 'colors', 'bar_grid_for_dataset', 'classwise_barplot_for_dataset',
-           'bar_plot_for_problem', 'plot_learning_curves_importances']
+__all__ = ['fig_param', 'colors', 'bar_grid_for_dataset', 'classwise_barplot_for_dataset',
+           'bar_plot_for_problem', 'plot_learning_curves_importances', 'pgf_with_latex']
 
-colors = ['black', 'indigo', 'blueviolet', 'mediumorchid', 'plum', 'mediumblue', 'firebrick',
-          'darkorange', 'sandybrown','darkgoldenrod', 'gold', 'khaki']
+colors = ['black', 'black', 'black', 'indigo', 'blueviolet', 'mediumorchid', 'plum', 'mediumblue', 'firebrick',
+          'darkorange', 'sandybrown', 'darkgoldenrod', 'gold', 'khaki']
 
 pgf_with_latex = {  # setup matplotlib to use latex for output
     "pgf.texsystem": "pdflatex",  # change this if using xetex or lautex
     "text.usetex": True,  # use LaTeX to write all text
     "font.family": "serif",
     "font.serif": [],  # blank entries should cause plots
-    "font.sans-serif": [],  # to inherit fonts from the document
+    "font.sans-serif": ['Times New Roman'] + plt.rcParams['font.serif'],  # to inherit fonts from the document
     "font.monospace": [],
-    "axes.labelsize": 10,  # LaTeX default is 10pt font.
-    "font.size": 10,
-    "legend.fontsize": 8,  # Make the legend/label fonts
-    "xtick.labelsize": 8,  # a little smaller
-    "ytick.labelsize": 8,
+    "font.size": 11,
+    "legend.fontsize": 11,  # Make the legend/label fonts
+    "xtick.labelsize": 11,  # a little smaller
+    "ytick.labelsize": 11,
     'pgf.rcfonts': False,
     "pgf.preamble": [
         r"\usepackage[utf8x]{inputenc}",  # use utf8 fonts
@@ -43,7 +45,7 @@ pgf_with_latex = {  # setup matplotlib to use latex for output
     ]  # using this preamble
 }
 
-fig_param = {'facecolor': 'w', 'edgecolor': 'w', 'transparent': False, 'dpi': 1200, 'bbox_inches': 'tight',
+fig_param = {'facecolor': 'w', 'edgecolor': 'w', 'transparent': False, 'dpi': 800, 'bbox_inches': 'tight',
              'pad_inches': 0.05}
 
 
@@ -65,7 +67,7 @@ def init_plots(df, extension, metric, figsize):
     del df['rank']
     u_models = list(df.Model.unique())
     u_models = [model.split('Classifier')[0] for model in u_models]
-    u_models[u_models.index('SGD')] = "StochasticGradientDescent"
+    u_models[u_models.index('SGD')] = "PerceptronLearningAlgorithm"
     u_models[u_models.index('LinearSVC')] = "SupportVectorMachine"
     u_models[u_models.index('Ridge')] = "RidgeClassificationModel"
     u_models = [' '.join(re.findall('[A-Z][^A-Z]*', model)) for model in u_models]
@@ -74,7 +76,7 @@ def init_plots(df, extension, metric, figsize):
     bar_width_offset = bar_width + offset
     space = 0.3
     index = []
-    for i in [1, 4, 1, 1, 2, 3]:
+    for i in [3, 3, 1, 2, 2, 2]:
         if len(index) == 0:
             index.extend(list(np.arange(1, i + 1) * bar_width_offset))
         else:
@@ -88,7 +90,7 @@ def init_plots(df, extension, metric, figsize):
     return bar_width, df, fig_param, index, opacity, u_datasets, u_models, end
 
 
-def bar_grid_for_dataset(df, metric, std, folder, figsize=(7, 4), extension='png'):
+def bar_grid_for_dataset(df, metric, std, folder, figsize=(7, 4), extension='png', logger=None):
     bar_width, df, fig_param, index, opacity, u_datasets, u_models, end = init_plots(df, extension, figsize, metric)
     if len(u_datasets) % 4 == 0:
         c = 4
@@ -96,16 +98,19 @@ def bar_grid_for_dataset(df, metric, std, folder, figsize=(7, 4), extension='png
     elif len(u_datasets) % 3 == 0:
         c = 3
         r = int(len(u_datasets) / c)
-    elif len(u_datasets) % 2 == 0:
-        c = 2
-        r = int(len(u_datasets) / c)
+    else:
+        c = 5
+        r = int(len(u_datasets) / c) + 1
     figsize = (figsize[0] * r, figsize[1] * c)
+    logger.info('Datasets {}, figsize {}, rows {}, cols {}'.format(len(u_datasets), figsize, r, c))
     fig, axs = plt.subplots(nrows=r, ncols=c, sharex=True, sharey=True, figsize=figsize, frameon=True, edgecolor='k',
                             facecolor='white')
+    plt.figure()
     axs = np.array(axs).flatten()
     ini = index[0]
 
     for ax, dataset in zip(axs, u_datasets):
+        logger.error("Plotting grid plot for dataset {}".format(dataset))
         accs = list(df[df['Dataset'] == dataset][metric].values)
         errors = list(df[df['Dataset'] == dataset][metric + '-std'].values / std)
         ax.bar(x=index, height=accs, yerr=errors, width=bar_width, alpha=opacity, color=colors, tick_label=u_models)
@@ -126,13 +131,16 @@ def bar_grid_for_dataset(df, metric, std, folder, figsize=(7, 4), extension='png
         ax.set_ylabel(metric.title(), fontsize=10)
     fname = os.path.join(folder, "plot_{}.{}".format('grid', extension))
     fig_param['fname'] = fname
-    plt.savefig(**fig_param)
+    fig.savefig(**fig_param)
+    plt.show()
 
 
-def classwise_barplot_for_dataset(df, metric, std, folder, figsize=(4, 4), extension='png'):
+def classwise_barplot_for_dataset(df, metric, std, folder, figsize=(4, 4), extension='png',
+                                  logger=logging.getLogger('None')):
     bar_width, df, fig_param, index, opacity, u_datasets, u_models, end = init_plots(df, extension, figsize, metric)
     ini = index[0]
     for dataset in u_datasets:
+        logger.error("Plotting single for dataset {}".format(dataset))
         fig, ax = plt.subplots(figsize=figsize, frameon=True, edgecolor='k', facecolor='white')
         accs = list(df[df['Dataset'] == dataset][metric].values)
         errors = list(df[df['Dataset'] == dataset][metric + '-std'].values / std)
@@ -157,7 +165,8 @@ def classwise_barplot_for_dataset(df, metric, std, folder, figsize=(4, 4), exten
         plt.savefig(**fig_param)
 
 
-def bar_plot_for_problem(df, metric, params, std, folder, figsize=(14, 6), extension='png'):
+def bar_plot_for_problem(df, metric, params, std, folder, figsize=(14, 6), extension='png',
+                         logger=logging.getLogger('None')):
     bar_width, df, fig_param, index, opacity, u_datasets, u_models, end = init_plots(df, extension, figsize, metric)
     init_index = index
     ini = init_index[0]
@@ -323,8 +332,9 @@ def learning_curve_for_label(estimators, X, y, vulnerable, fname, extension):
     fig_param['fname'] = fname
     plt.savefig(**fig_param)
 
+
 def plot_learning_curves_importances(models_folder, csv_reader, vulnerable_classes, lrcurve_folder, imp_folder,
-                                     extension='png', plotlr=False):
+                                     extension='png', plotlr=False, logger=logging.getLogger('None')):
     def get_estimators_data(models_folder, csv_reader, label_number, missing_ccs_fin):
         X, y = csv_reader.get_data_class(class_label=label_number, missing_ccs_fin=missing_ccs_fin)
         label = csv_reader.inverse_label_mapping[label_number]
@@ -348,14 +358,14 @@ def plot_learning_curves_importances(models_folder, csv_reader, vulnerable_class
                                                       missing_ccs_fin=missing_ccs_fin)
         vulnerable = label in vulnerable_classes
         if vulnerable and not missing_ccs_fin:
-            name = 'RandomForestClassifier'.lower() + '-' + '_'.join(label.lower().split(' ')) + '.pickle'
+            name = RANDOM_FOREST_CLASSIFIER.lower() + '-' + '_'.join(label.lower().split(' ')) + '.pickle'
             f = open(os.path.join(models_folder, name), 'rb')
             model1 = pickle.load(f)
             model1.n_estimators = 500
             model1.fit(X, y)
             label1 = label + ' Missing-CCS-FIN'
 
-            name = 'RandomForestClassifier'.lower() + '-' + '_'.join(label1.lower().split(' ')) + '.pickle'
+            name = RANDOM_FOREST_CLASSIFIER.lower() + '-' + '_'.join(label1.lower().split(' ')) + '.pickle'
             f = open(os.path.join(models_folder, name), 'rb')
             model2 = pickle.load(f)
             model2.n_estimators = 500
@@ -368,4 +378,4 @@ def plot_learning_curves_importances(models_folder, csv_reader, vulnerable_class
             label = label.replace(" ", "_")
             fname = os.path.join(lrcurve_folder, "learning_curves_{}.{}".format(label, extension))
             learning_curve_for_label(estimators, X, y, vulnerable, fname, extension)
-        print("###########################{}-{}###########################".format(vulnerable, label))
+        logger.error("###########################{}-{}###########################".format(vulnerable, label))
