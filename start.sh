@@ -30,6 +30,7 @@ ALL_PARAMETERS=$*
 
 while [ "$1" != "" ]; do
     case $1 in
+    
         --name )                shift
                                 SUT_NAME="$1"
                                 ;;
