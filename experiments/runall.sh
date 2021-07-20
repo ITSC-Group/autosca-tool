@@ -42,6 +42,8 @@ tc qdisc replace dev docker0 root netem delay "2ms"
 ./start.sh --name imitation-server:6.0 --tag "facebook_v2" --docker --tlsattacker --port 44503 --datasetfolder $DATASETFOLDER --clientarguments "--repetitions $REPETITIONS --skip --wait 1500 --timeout 200" --serverarguments "--configFile=/config/base.conf --configFile=/config/facebook_v2.conf" &
 ./start.sh --name imitation-server:6.0 --tag "netscaler_gcm" --docker --tlsattacker --port 44504 --datasetfolder $DATASETFOLDER --clientarguments "--repetitions $REPETITIONS --noskip --wait 1500" --serverarguments "--configFile=/config/base.conf --configFile=/config/netscaler_gcm.conf" &
 ./start.sh --name imitation-server:6.0 --tag "pan_os" --docker --tlsattacker --port 44505 --datasetfolder $DATASETFOLDER --clientarguments "--repetitions $REPETITIONS --noskip --wait 1500" --serverarguments "--configFile=/config/base.conf --configFile=/config/pan_os.conf" &
+./start.sh --name imitation-server:7.2 --tag "delay_1s" --docker --tlsattacker --port 44505 --datasetfolder $DATASETFOLDER --clientarguments "--repetitions $REPETITIONS --noskip --wait 1500" --serverarguments "--configFile=/config/base.conf --configFile=/config/time_delay_1s.conf" &
+
 
 REPETITIONS=2000000
 ./start.sh --name openssl-0_9_7a-server --docker --tlsattacker --port 44601 --datasetfolder $DATASETFOLDER --dockerarguments "-v cert-data:/cert/:ro,nocopy" --clientarguments "--repetitions $REPETITIONS --noskip --twoclass" --serverarguments "-key /cert/rsa2048key.pem -cert /cert/rsa2048cert.pem" &
