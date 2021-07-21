@@ -13,7 +13,8 @@ scan_domain(){
         INDEX=$1
         SUMMARY="$FOLDER/Summary.md"
         echo "Executing scan number $INDEX";
-        ./start.sh --name $DOMAIN --tag $INDEX --docker --tlsattacker --port num=$((44505 + $INDEX)) --datasetfolder $FOLDER --clientarguments "--repetitions $REPETITIONS --noskip --wait 1500" --serverarguments "--configFile=/config/base.conf --configFile=/config/time_delay_1s.conf"
+        PORTNR=$((44505+$INDEX))
+        ./start.sh --name $DOMAIN --tag $INDEX --docker --tlsattacker --port $PORTNR --datasetfolder $FOLDER --clientarguments "--repetitions $REPETITIONS --noskip --wait 1500" --serverarguments "--configFile=/config/base.conf --configFile=/config/time_delay_1s.conf"
 
         echo -e "\n\n# $INDEX $DOMAIN" >> "$SUMMARY"
         if [ -f "$FOLDER/$INDEX$DOMAIN/Report.txt" ]; then
