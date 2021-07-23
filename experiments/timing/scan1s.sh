@@ -1,5 +1,5 @@
 #! /bin/bash
-REPETITIONS=500
+REPETITIONS=50
 DATASET_FOLDER="/home/datasets"
 BEGIN_INDEX=1
 INDEX_AMOUNT=5
@@ -11,21 +11,23 @@ mkdir -p "$FOLDER"
 
 scan_domain(){
         INDEX=$1
+        TAG=no$INDEX
+        EXPERIMENT_FOLDER="$(date --iso-8601)-$TAG"
         SUMMARY="$FOLDER/Summary.md"
         echo "Executing scan number $INDEX";
         PORTNR=$((44605+$INDEX))
-        ./start.sh --name $DOMAIN --tag no$INDEX --docker --tlsattacker --port $PORTNR --datasetfolder $FOLDER --clientarguments "--repetitions $REPETITIONS --noskip --wait 1500" --serverarguments "--configFile=/config/base.conf --configFile=/config/time_delay_1s.conf"
+        ./start.sh --name $DOMAIN --tag $TAG --docker --tlsattacker --port $PORTNR --datasetfolder $FOLDER --clientarguments "--repetitions $REPETITIONS --noskip --wait 1500" --serverarguments "--configFile=/config/base.conf --configFile=/config/time_delay_1s.conf"
 
         echo -e "\n\n# $INDEX $DOMAIN" >> "$SUMMARY"
-        if [ -f "$FOLDER/$INDEX$DOMAIN/Report.txt" ]; then
-            cat "$FOLDER/$INDEX$DOMAIN/Report.txt" >> "$SUMMARY"
+        if [ -f "$FOLDER/$EXPERIMENT_FOLDER/Report.txt" ]; then
+            cat "$FOLDER/$EXPERIMENT_FOLDER/Report.txt" >> "$SUMMARY"
 
-        elif [ -f "$FOLDER/$INDEX$DOMAIN/TLS Attacker.log" ]; then
+        elif [ -f "$FOLDER/$EXPERIMENT_FOLDER/TLS Attacker.log" ]; then
             echo "## TLS Attacker Log" >> "$SUMMARY"
-            head -n 2 "$FOLDER/$INDEX$DOMAIN/TLS Attacker.log" >> "$SUMMARY"
-            if [ -f "$FOLDER/$INDEX$DOMAIN/Classification Model Training.log" ]; then
+            head -n 2 "$FOLDER/$EXPERIMENT_FOLDER/TLS Attacker.log" >> "$SUMMARY"
+            if [ -f "$FOLDER/$EXPERIMENT_FOLDER/Classification Model Training.log" ]; then
                 echo "## Classification Model Training Log" >> "$SUMMARY"
-                tail -n 3 "$FOLDER/$INDEX$DOMAIN/Classification Model Training.log" >> "$SUMMARY"
+                tail -n 3 "$FOLDER/$EXPERIMENT_FOLDER/Classification Model Training.log" >> "$SUMMARY"
             fi
 
         else
