@@ -1,5 +1,5 @@
 #! /bin/bash
-REPETITIONS=1500
+REPETITIONS=3000
 DATASET_FOLDER="/home/datasets"
 BEGIN_INDEX=1
 INDEX_AMOUNT=5
@@ -16,7 +16,7 @@ scan_domain(){
         SUMMARY="$FOLDER/Summary.md"
         echo "Executing scan number $INDEX";
         PORTNR=$((44605+$INDEX))
-        ./start.sh --name $DOMAIN --tag $TAG --docker --tlsattacker --port $PORTNR --datasetfolder $FOLDER --clientarguments "--repetitions $REPETITIONS --noskip --wait 1500" --serverarguments "--configFile=/config/base.conf --configFile=/config/time_delay_1s.conf"
+        ./start.sh --name $DOMAIN --tag $TAG --docker --tlsattacker --port $PORTNR --datasetfolder $FOLDER --clientarguments "--repetitions $REPETITIONS --noskip --skip --wait 1500" --serverarguments "--configFile=/config/base.conf --configFile=/config/time_delay_1s.conf"
 
         echo -e "\n\n# $INDEX $DOMAIN" >> "$SUMMARY"
         if [ -f "$FOLDER/$EXPERIMENT_FOLDER/Report.txt" ]; then
