@@ -127,7 +127,6 @@ def bar_grid_for_dataset(df, metric, std, folder, figsize=(7, 4), extension='png
         ax.tick_params(axis='x', which='major', labelsize=10)
         ax.set_xticklabels(ax.xaxis.get_majorticklabels(), rotation=45, ha='right')
         ax.set_ylim(0, end)
-
         ax.set_ylabel(metric.title(), fontsize=10)
     fname = os.path.join(folder, "plot_{}.{}".format('grid', extension))
     fig_param['fname'] = fname
@@ -336,7 +335,7 @@ def learning_curve_for_label(estimators, X, y, vulnerable, fname, extension):
 def plot_learning_curves_importances(models_folder, csv_reader, vulnerable_classes, lrcurve_folder, imp_folder,
                                      extension='png', plotlr=False, logger=logging.getLogger('None')):
     def get_estimators_data(models_folder, csv_reader, label_number, missing_ccs_fin):
-        X, y = csv_reader.get_data_class(class_label=label_number, missing_ccs_fin=missing_ccs_fin)
+        X, y = csv_reader.get_data_class_label(class_label=label_number, missing_ccs_fin=missing_ccs_fin)
         label = csv_reader.inverse_label_mapping[label_number]
         if missing_ccs_fin:
             label = label + ' Missing-CCS-FIN'
