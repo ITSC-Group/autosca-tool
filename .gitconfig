@@ -1,0 +1,15 @@
+# config.gitlab
+[user]
+	email = prithagupta.nsit@gmail.com
+	name = prithagupta
+	signingkey = A1C1A67877F2631F
+[commit]
+	gpsign = true
+	gpgsign = true
+[filter "lfs"]
+	process = git-lfs filter-process
+	required = true
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+[credential]
+	helper = store
