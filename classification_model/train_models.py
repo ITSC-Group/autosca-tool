@@ -120,7 +120,8 @@ if __name__ == "__main__":
             continue
         if y.shape[0] < 2 * cv_iterations and cv_technique == 'kccv':
             ones = int(np.count_nonzero(y) / 2)
-            new_cv_iter = np.min([ones, y.shape[0] - ones])
+            zeros = int(y.shape[0] - np.count_nonzero(y))/2
+            new_cv_iter = np.min([ones, zeros])
             logger.info("For label {} New cv {} from {}".format(label, new_cv_iter, [ones, y.shape[0] - ones]))
             cv_iterator = StratifiedKFold(n_splits=new_cv_iter, shuffle=True, random_state=random_state)
             cv_iterations_dict[label] = new_cv_iter
