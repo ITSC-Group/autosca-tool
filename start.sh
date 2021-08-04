@@ -218,6 +218,7 @@ if [ "$START_DOCKER" = "1" ]; then
 fi
 
 echo "Starting feature extraction"
+echo " " >> "$CONFIG"
 echo "# Feature Extraction" >> "$CONFIG"
 START_TIME=$(date +%s)
 cd "$TOOL_FOLDER/feature_extraction" || exit
@@ -231,6 +232,7 @@ echo "$DURATION seconds" >> "$CONFIG"
 if [ "$SKIP_LEARNING" = "0" ]; then
     echo "Starting classification model training"
     cd "$TOOL_FOLDER/classification_model" || exit
+    echo " " >> "$CONFIG"
     echo "# Machine Learning" >> "$CONFIG"
     echo "## Parameters" >> "$CONFIG"
     echo "Doing $CROSSVALIDATION_ITERATIONS crossvalidation iterations" >> "$CONFIG"
@@ -244,7 +246,12 @@ if [ "$SKIP_LEARNING" = "0" ]; then
     echo "## Execution Time" >> "$CONFIG"
     echo "$DURATION seconds" >> "$CONFIG"
 
+    echo "Generating report"
+    pipenv run python3 pvalues_calculation.py --folder="$FOLDER" --cv_technique=$CROSSVALIDATION_TECHNIQUE 2>&1 | tee "$FOLDER/Report Generation.log"
+
     echo "Plotting the machine learning results"
     pipenv run python3 plot_results.py --folder="$FOLDER" --cv_technique=$CROSSVALIDATION_TECHNIQUE --cv_iterations=$CROSSVALIDATION_ITERATIONS 2>&1 | tee "$FOLDER/Classification Model Plotting.log"
     echo "Finished plotting"
+    echo " " >> "$CONFIG"
+    echo "Experiment run finished" >> "$CONFIG"
 fi
