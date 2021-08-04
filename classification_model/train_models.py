@@ -122,7 +122,7 @@ if __name__ == "__main__":
             ones = int(np.count_nonzero(y) / 2)
             zeros = int(y.shape[0] - np.count_nonzero(y))/2
             new_cv_iter = np.min([ones, zeros])
-            logger.info("For label {} New cv {} from {}".format(label, new_cv_iter, [ones, y.shape[0] - ones]))
+            logger.info("For label {} New cv {} from {}".format(label, new_cv_iter, [ones*2, zeros*2]))
             cv_iterator = StratifiedKFold(n_splits=new_cv_iter, shuffle=True, random_state=random_state)
             cv_iterations_dict[label] = new_cv_iter
         else:
