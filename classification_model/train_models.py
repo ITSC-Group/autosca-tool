@@ -118,11 +118,13 @@ if __name__ == "__main__":
             if y.shape[0] < 3:
                 logger.info("Very less number of instances {}".format(y.shape[0]))
             continue
-        if y.shape[0] < 2 * cv_iterations and cv_technique == 'kccv':
-            ones = int(np.count_nonzero(y) / 2)
-            zeros = int(y.shape[0] - np.count_nonzero(y))/2
-            new_cv_iter = np.min([ones, zeros])
-            logger.info("For label {} New cv {} from {}".format(label, new_cv_iter, [ones, y.shape[0] - ones]))
+        ones = int(np.count_nonzero(y) / 2)
+        zeros = int((y.shape[0] - np.count_nonzero(y)) / 2)
+        new_cv_iter = np.min([ones, zeros])
+        logger.info("Ones {} Zeros {}".format(ones*2, zeros*2))
+        logger.info("New cv {} verssu from {}".format(label, new_cv_iter, [ones * 2, zeros * 2]))
+        if new_cv_iter < cv_iterations and cv_technique == 'kccv':
+            logger.info("For label {} New cv {} from {}".format(label, new_cv_iter, [ones * 2, zeros * 2]))
             cv_iterator = StratifiedKFold(n_splits=new_cv_iter, shuffle=True, random_state=random_state)
             cv_iterations_dict[label] = new_cv_iter
         else:
