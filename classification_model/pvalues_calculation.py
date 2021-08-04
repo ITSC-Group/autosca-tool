@@ -56,11 +56,12 @@ if __name__== "__main__":
     csv_reader.plot_class_distribution()
     dataset = args.folder.split('/')[-1]
     vulnerable_classes = dict()
-
+    report_string = ''
     for k in cols_pvals:
         vulnerable_classes[k] = []
     df_file_path = os.path.join(folder, subfolder, 'Model Results.csv')
     vulnerable_file = os.path.join(folder, subfolder, 'Vulnerable Classes.pickle')
+    report_file = os.path.join(folder, subfolder, 'Report.txt')
 
     logger.info("Starting the p-value calculation")
     accuracies_file = os.path.join(folder, subfolder, 'Model Accuracies.pickle')
@@ -183,6 +184,8 @@ if __name__== "__main__":
             if np.any(reject):
                 vulnerable_classes[pval_col].append(label)
                 logger.info("Adding class {} for pval {}".format(label, pval_col))
+                if pval_col == CTTEST_PVAL + '-random':
+                    report_string = update_report(report_string, reject, pvals_corrected, label)
         final.append(one_row)
 
     logger.info(print_dictionary(vulnerable_classes))
@@ -199,3 +202,12 @@ if __name__== "__main__":
 
     with open(vulnerable_file, "wb") as class_file:
         pickle.dump(vulnerable_classes, class_file)
+
+    if report_string != '':
+        report_string = report_string + 'The Server is Vulnerable to Side Channel attacks'
+    else:
+        report_string = report_string + 'The Server is Not-Vulnerable to Side Channel attacks'
+
+    text_file = open(report_file, "w")
+    n = text_file.write(report_string)
+    text_file.close()
