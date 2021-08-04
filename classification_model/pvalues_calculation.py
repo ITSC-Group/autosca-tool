@@ -108,20 +108,23 @@ if __name__== "__main__":
             else:
                 raise ValueError('Cross-Validation technique is does not exist should be {} or {}'.format(choices[0],
                                                                                                           choices[1]))
+            if np.any(np.isnan(accuracies)):
+                p_random_cttest, p_majority_cttest, p_prior_cttest, p_random_ttest, p_majority_ttest, p_prior_ttest, \
+                p_random_wilcox, p_majority_wilcox, p_prior_wilcox = 1, 1, 1, 1, 1, 1, 1, 1, 1
+            else:
+                p_random_cttest = paired_ttest(random_accs, accuracies, n_training_folds, n_test_folds, correction=True)
+                p_majority_cttest = paired_ttest(majority_accs, accuracies, n_training_folds, n_test_folds,
+                                                 correction=True)
+                p_prior_cttest = paired_ttest(prior_accs, accuracies, n_training_folds, n_test_folds, correction=True)
 
-            p_random_cttest = paired_ttest(random_accs, accuracies, n_training_folds, n_test_folds, correction=True)
-            p_majority_cttest = paired_ttest(majority_accs, accuracies, n_training_folds, n_test_folds,
-                                             correction=True)
-            p_prior_cttest = paired_ttest(prior_accs, accuracies, n_training_folds, n_test_folds, correction=True)
+                p_random_ttest = paired_ttest(random_accs, accuracies, n_training_folds, n_test_folds, correction=False)
+                p_majority_ttest = paired_ttest(majority_accs, accuracies, n_training_folds, n_test_folds,
+                                                correction=False)
+                p_prior_ttest = paired_ttest(prior_accs, accuracies, n_training_folds, n_test_folds, correction=False)
 
-            p_random_ttest = paired_ttest(random_accs, accuracies, n_training_folds, n_test_folds, correction=False)
-            p_majority_ttest = paired_ttest(majority_accs, accuracies, n_training_folds, n_test_folds,
-                                            correction=False)
-            p_prior_ttest = paired_ttest(prior_accs, accuracies, n_training_folds, n_test_folds, correction=False)
-
-            p_majority_wilcox = wilcoxon_signed_rank_test(majority_accs, accuracies)
-            p_random_wilcox = wilcoxon_signed_rank_test(random_accs, accuracies)
-            p_prior_wilcox = wilcoxon_signed_rank_test(prior_accs, accuracies)
+                p_majority_wilcox = wilcoxon_signed_rank_test(majority_accs, accuracies)
+                p_random_wilcox = wilcoxon_signed_rank_test(random_accs, accuracies)
+                p_prior_wilcox = wilcoxon_signed_rank_test(prior_accs, accuracies)
 
             _, pvalue_single = fisher_exact(cm_single)
             confusion_matrix_sum = confusion_matrices.sum(axis=0)

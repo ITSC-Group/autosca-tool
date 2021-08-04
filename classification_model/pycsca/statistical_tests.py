@@ -4,8 +4,6 @@ import numpy as np
 from scipy.stats import t, wilcoxon
 
 __all__ = ["wilcoxon_signed_rank_test", "paired_ttest"]
-
-
 # def corrected_dependent_ttest(x1, x2, n_training_folds, n_test_folds, alpha):
 #     n = len(x1)
 #     differences = [(x1[i] - x2[i]) for i in range(n)]
