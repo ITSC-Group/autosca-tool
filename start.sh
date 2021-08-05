@@ -10,6 +10,7 @@ TAG=""
 USE_TLS_ATTACKER=0
 START_DOCKER=0
 SKIP_LEARNING=0
+PARALLEL_THREADS=$(grep -c ^processor /proc/cpuinfo)
 ALL_PARAMETERS=""
 CROSSVALIDATION_TECHNIQUE="mccv"
 CROSSVALIDATION_ITERATIONS=30
@@ -66,6 +67,9 @@ while [ "$1" != "" ]; do
                                 ;;
         --dockerarguments )     shift
                                 DOCKER_ARGUMENTS=$1
+                                ;;
+        --threads )             shift
+                                PARALLEL_THREADS=$1
                                 ;;
         -h | --help )           usage
                                 exit
@@ -219,6 +223,7 @@ if [ "$START_DOCKER" = "1" ]; then
 fi
 
 echo "Starting feature extraction"
+echo " " >> "$CONFIG"
 echo "# Feature Extraction" >> "$CONFIG"
 START_TIME=$(date +%s)
 cd "$TOOL_FOLDER/feature_extraction" || exit
@@ -232,20 +237,26 @@ echo "$DURATION seconds" >> "$CONFIG"
 if [ "$SKIP_LEARNING" = "0" ]; then
     echo "Starting classification model training"
     cd "$TOOL_FOLDER/classification_model" || exit
+    echo " " >> "$CONFIG"
     echo "# Machine Learning" >> "$CONFIG"
     echo "## Parameters" >> "$CONFIG"
     echo "Doing $CROSSVALIDATION_ITERATIONS crossvalidation iterations" >> "$CONFIG"
     echo "Doing $HYPERPARAMETER_ITERATIONS hyperparameter optimization iterations" >> "$CONFIG"
 
     START_TIME=$(date +%s)
-    pipenv run python3 train_models.py --folder="$FOLDER" --cv_technique=$CROSSVALIDATION_TECHNIQUE --cv_iterations=$CROSSVALIDATION_ITERATIONS --iterations=$HYPERPARAMETER_ITERATIONS 2>&1 | tee "$FOLDER/Classification Model Training.log"
+    pipenv run python3 train_models.py --folder="$FOLDER" --cv_technique=$CROSSVALIDATION_TECHNIQUE --cv_iterations=$CROSSVALIDATION_ITERATIONS --iterations=$HYPERPARAMETER_ITERATIONS -n_jobs=$PARALLEL_THREADS 2>&1 | tee "$FOLDER/Classification Model Training.log"
     END_TIME=$(date +%s)
     DURATION="$(($END_TIME-$START_TIME))"
     echo "Finished classification model training, execution took $DURATION seconds"
     echo "## Execution Time" >> "$CONFIG"
     echo "$DURATION seconds" >> "$CONFIG"
 
+    echo "Generating report"
+    pipenv run python3 pvalues_calculation.py --folder="$FOLDER" --cv_technique=$CROSSVALIDATION_TECHNIQUE 2>&1 | tee "$FOLDER/Report Generation.log"
+
     echo "Plotting the machine learning results"
     pipenv run python3 plot_results.py --folder="$FOLDER" --cv_technique=$CROSSVALIDATION_TECHNIQUE --cv_iterations=$CROSSVALIDATION_ITERATIONS 2>&1 | tee "$FOLDER/Classification Model Plotting.log"
     echo "Finished plotting"
+    echo " " >> "$CONFIG"
+    echo "Experiment run finished" >> "$CONFIG"
 fi
