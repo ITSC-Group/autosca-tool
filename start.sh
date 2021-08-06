@@ -256,7 +256,7 @@ learning () {
 
 
     echo "Generating report"
-    pipenv run python3 pvalues_calculation.py --folder="$FOLDER" --cv_technique=$1 2>&1 | tee "$FOLDER/Report Generation.log"
+    pipenv run python3 pvalues_calculation.py --folder="$FOLDER" --cv_technique=$1 2>&1 | tee "$FOLDER/Report Generation $1.log"
 
     echo "Plotting the machine learning results"
     pipenv run python3 plot_results.py --folder="$FOLDER" --cv_technique=$1 --cv_iterations=$CROSSVALIDATION_ITERATIONS 2>&1 | tee "$FOLDER/Classification Model Plotting $1.log"
