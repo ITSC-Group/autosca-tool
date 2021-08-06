@@ -275,3 +275,4 @@ if [ "$SKIP_LEARNING" = "0" ]; then
 fi
 
 echo "Experiment run finished" >> "$CONFIG"
+echo "Experiment run finished"
