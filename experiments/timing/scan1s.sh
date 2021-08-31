@@ -1,8 +1,8 @@
 #! /bin/bash
-REPETITIONS=500
+REPETITIONS=15000
 DATASET_FOLDER="/home/datasets"
 BEGIN_INDEX=1
-INDEX_AMOUNT=3
+INDEX_AMOUNT=5
 DOMAIN="imitation-server:7.2"
 
 FOLDER="$DATASET_FOLDER/$(date --iso-8601)-1sdelay-$INDEX_AMOUNT"
@@ -16,7 +16,7 @@ scan_domain(){
         SUMMARY="$FOLDER/Summary.md"
         echo "Executing scan number $INDEX";
         PORTNR=$((44605+$INDEX))
-        ./start.sh --name $DOMAIN --tag $TAG --docker --tlsattacker --port $PORTNR --datasetfolder $FOLDER --clientarguments "--repetitions $REPETITIONS --noskip --wait 1500" --serverarguments "--configFile=/config/base.conf --configFile=/config/time_delay_1s.conf"
+        ./start.sh --name $DOMAIN --tag $TAG --docker --alltests --tlsattacker --port $PORTNR --datasetfolder $FOLDER --clientarguments "--repetitions $REPETITIONS --noskip --wait 1500" --serverarguments "--configFile=/config/base.conf --configFile=/config/time_delay_1s.conf"
         # ./start.sh --name imitation-server:7.2 --tag "delay_1s" --docker --tlsattacker --port 44505 --datasetfolder $DATASETFOLDER --clientarguments "--repetitions $REPETITIONS --noskip --wait 1500" --serverarguments "--configFile=/config/base.conf --configFile=/config/time_delay_1s.conf" &
         
         echo -e "\n\n# $INDEX $DOMAIN" >> "$SUMMARY"
@@ -35,6 +35,7 @@ scan_domain(){
             echo "Experiment crashed, no output files found" >> "$SUMMARY"
         fi
 }
+
 
 # initialize a semaphore with a given number of tokens
 open_sem(){  
