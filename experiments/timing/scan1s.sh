@@ -8,7 +8,7 @@ DOMAIN="imitation-server:7.2"
 FOLDER="$DATASET_FOLDER/$(date --iso-8601)-1sdelay-$INDEX_AMOUNT"
 echo "Creating dataset folder $FOLDER"
 mkdir -p "$FOLDER"
-
+µ
 scan_domain(){
         INDEX=$1
         TAG=no$INDEX
