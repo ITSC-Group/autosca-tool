@@ -198,7 +198,7 @@ echo "## Client Command" >> "$CONFIG"
 echo "$CLIENT_COMMAND" >> "$CONFIG"
 START_TIME=$(date +%s)
 
-eval $CLIENT_COMMAND
+eval $CLIENT_COMMAND  2>&1 | tee "$FOLDER/Client.log"
 
 END_TIME=$(date +%s)
 DURATION="$(($END_TIME-$START_TIME))"
