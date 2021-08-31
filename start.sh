@@ -21,6 +21,7 @@ SERVER_ARGUMENTS=""
 DOCKER_ARGUMENTS=""
 DATASET_FOLDER=""
 
+
 set -e
 
 usage()
