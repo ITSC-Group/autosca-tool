@@ -2,7 +2,7 @@
 REPETITIONS=500
 DATASET_FOLDER="/home/datasets"
 BEGIN_INDEX=1
-INDEX_AMOUNT=2
+INDEX_AMOUNT=1
 DOMAIN="apollolv/damnvulnerableopenssl-server"
 
 FOLDER="$DATASET_FOLDER/$(date --iso-8601)-1sdelay-$INDEX_AMOUNT"
