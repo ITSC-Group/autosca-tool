@@ -129,7 +129,7 @@ if [ "$START_DOCKER" = "1" ]; then
     echo "## Docker Command" >> "$CONFIG"
     echo "$DOCKER_COMMAND" >> "$CONFIG"
     $DOCKER_COMMAND
-    docker logs -f $SANITIZED_SUT_NAME 2>&1 | tee "$FOLDER/Docker Server.log" &
+    # docker logs -f $SANITIZED_SUT_NAME 2>&1 | tee "$FOLDER/Docker Server.log" &
     DOCKERLOG_PID=$!
 
     CAPTURE_HOST=$(docker inspect -f '{{ .NetworkSettings.IPAddress }}' "$SANITIZED_SUT_NAME")
