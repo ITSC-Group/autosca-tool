@@ -120,7 +120,7 @@ echo "# Dataset generation" >> "$CONFIG"
 
 if [ "$START_DOCKER" = "1" ]; then
     echo "Starting system under test (SUT) docker image $SUT_NAME"
-    if [ "$(docker ps -aq -f name=$SANITIZED_SUT_NAME)" ]; then
+    if [ "$(docker ps -q -f name=$SANITIZED_SUT_NAME)" ]; then
         echo "Cleaning up a container from a previous run"
         docker stop "$SANITIZED_SUT_NAME"
     fi
