@@ -16,7 +16,7 @@ scan_domain(){
         SUMMARY="$FOLDER/Summary.md"
         echo "Executing scan number $INDEX";
         PORTNR=$((44605+$INDEX))
-        ./start.sh --name $DOMAIN --tag $TAG --docker --alltests --tlsattacker --port $PORTNR --datasetfolder $FOLDER --clientarguments "--repetitions $REPETITIONS --noskip --wait 1500" --serverarguments "--configFile=/config/base.conf --configFile=/config/time_delay_1s.conf"
+        ./start.sh --name $DOMAIN --tag $TAG --docker --alltests --port $PORTNR --datasetfolder $FOLDER --clientarguments "--repetitions $REPETITIONS --noskip --processes 0 --wait 1500" --serverarguments "--configFile=/config/base.conf --configFile=/config/time_delay_1s.conf"
         # ./start.sh --name imitation-server:7.2 --tag "delay_1s" --docker --tlsattacker --port 44505 --datasetfolder $DATASETFOLDER --clientarguments "--repetitions $REPETITIONS --noskip --wait 1500" --serverarguments "--configFile=/config/base.conf --configFile=/config/time_delay_1s.conf" &
         
         echo -e "\n\n# $INDEX $DOMAIN" >> "$SUMMARY"
