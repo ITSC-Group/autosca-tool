@@ -3,7 +3,7 @@ REPETITIONS=500
 DATASET_FOLDER="/home/datasets"
 BEGIN_INDEX=1
 INDEX_AMOUNT=2
-DOMAIN="imitation-server:7.2"
+DOMAIN="apollolv/damnvulnerableopenssl-server"
 
 FOLDER="$DATASET_FOLDER/$(date --iso-8601)-1sdelay-$INDEX_AMOUNT"
 echo "Creating dataset folder $FOLDER"
@@ -16,7 +16,7 @@ scan_domain(){
         SUMMARY="$FOLDER/Summary.md"
         echo "Executing scan number $INDEX";
         PORTNR=$((44605+$INDEX))
-        ./start.sh --name $DOMAIN --tag $TAG --docker --alltests --tlsattacker --port $PORTNR --datasetfolder $FOLDER --clientarguments "--repetitions $REPETITIONS --noskip --wait 1500" --serverarguments "--configFile=/config/base.conf --configFile=/config/time_delay_1s.conf"
+        ./start.sh --name $DOMAIN --tag $TAG --docker --alltests --tlsattacker --port $PORTNR --datasetfolder $FOLDER --clientarguments "--repetitions $REPETITIONS --noskip --wait 1500"
         # ./start.sh --name imitation-server:7.2 --tag "delay_1s" --docker --tlsattacker --port 44505 --datasetfolder $DATASETFOLDER --clientarguments "--repetitions $REPETITIONS --noskip --wait 1500" --serverarguments "--configFile=/config/base.conf --configFile=/config/time_delay_1s.conf" &
         
         echo -e "\n\n# $INDEX $DOMAIN" >> "$SUMMARY"
