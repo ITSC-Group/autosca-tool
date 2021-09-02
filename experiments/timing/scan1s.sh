@@ -11,7 +11,7 @@ mkdir -p "$FOLDER"
 
 scan_domain(){
         INDEX=$1
-        TAG=no$INDEX
+        TAG=n$INDEX
         EXPERIMENT_FOLDER="$(date --iso-8601)-$TAG"
         SUMMARY="$FOLDER/Summary.md"
         echo "Executing scan number $INDEX";
