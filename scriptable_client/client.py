@@ -32,11 +32,12 @@ def run_single_session(request_index: int, sut_name: str, use_sentinel: bool, wa
         else:
             print('At least one of --skip or --noskip must be selected')
             exit(1)
-    test_cases = ['correct_padding',
-                  'missing_separator',
-                  'wrong_version_number',
-                  'incorrect_padding_start',
-                  'wrong_separator_position']
+    test_cases = ['Correctly_formatted_PKCS#1_PMS_message',
+                  'Wrong_separator_(0x00_set_to_0x17)',
+                  'Invalid_TLS_version_in_PMS',
+                  'Wrong_first_byte_(0x00_set_to_0x17)',
+                  'Wrong_second_byte_(0x02_set_to_0x17)',
+                  'Wrong_separator_position_(44)']
     current_case = choice(test_cases)
     config_files.append(f'./config/{current_case}.conf')
     if skip_ccs_fin:
