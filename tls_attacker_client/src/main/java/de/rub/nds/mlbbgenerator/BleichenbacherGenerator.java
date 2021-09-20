@@ -115,12 +115,6 @@ public class BleichenbacherGenerator {
             }
             System.out.println(vector.getName());
 
-            // Execute workflow
-            WorkflowTrace workflowTrace = BleichenbacherWorkflowGenerator.generateWorkflow(config, workflowType, vector.getEncryptedValue());
-            State state = new State(config, workflowTrace);
-            WorkflowExecutor executor = new DefaultWorkflowExecutor(state);
-            executor.executeWorkflow();
-            //we explicitly close the socket at the end of the handshake - this can potentially cause problem if the server is slower than the timeout
 
             try{
                 // Do some busy waiting if necessary
@@ -129,6 +123,12 @@ public class BleichenbacherGenerator {
                 Thread.currentThread().interrupt();
             }
 
+            // Execute workflow
+            WorkflowTrace workflowTrace = BleichenbacherWorkflowGenerator.generateWorkflow(config, workflowType, vector.getEncryptedValue());
+            State state = new State(config, workflowTrace);
+            WorkflowExecutor executor = new DefaultWorkflowExecutor(state);
+            executor.executeWorkflow();
+            //we explicitly close the socket at the end of the handshake - this can potentially cause problem if the server is slower than the timeout
         }
         try{
             csvWriter.close();
