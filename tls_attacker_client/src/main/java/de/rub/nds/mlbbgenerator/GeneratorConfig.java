@@ -80,6 +80,9 @@ public class GeneratorConfig extends TLSDelegateConfig {
     @Parameter(names = "--twoclass", description = "Instead of randomly choosing between all vectors, choose only between correct padding and wrong version number")
     private boolean twoclass = false;
 
+    @Parameter(names = "--oneclass", description = "Instead of randomly choosing between all vectors, choose only wrong first byte")
+    private boolean oneclass = false;
+
 
     /**
      *
@@ -203,6 +206,14 @@ public class GeneratorConfig extends TLSDelegateConfig {
 
     public void setTwoclass(boolean twoclass) {
         this.twoclass = twoclass;
+    }
+
+    public boolean isOneclass() {
+        return oneclass;
+    }
+
+    public void setOneclass(boolean oneclass) {
+        this.oneclass = oneclass;
     }
 
 }

@@ -66,10 +66,10 @@ public class BleichenbacherGenerator {
         for (int i = 0; i < generatorConfig.getIterations(); i++)//How many itereations do we want to do?
         {
             Pkcs1Vector vector = null;
-            if(!generatorConfig.isTwoclass()){
-                // Choose a vector at random
-                 vector = vectors.get(r.nextInt(vectors.size() - 1));
-            }else{
+            if(generatorConfig.isOneclass()){
+                // Choose wrong first byte
+                vector = vectors.get(1);
+            }else if(generatorConfig.isTwoclass()){
                 if(r.nextBoolean()){
                     // Choose the bad PMS version number
                     vector = vectors.get(3);
@@ -77,6 +77,9 @@ public class BleichenbacherGenerator {
                     // Choose correct padding
                     vector = vectors.get(0);
                 }
+            }else{
+                // Choose a vector at random
+                 vector = vectors.get(r.nextInt(vectors.size() - 1));
             }
 
             byte[] newRandom = new byte[32];
