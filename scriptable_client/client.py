@@ -17,7 +17,7 @@ def determine_client_hello_random(log: str) -> str:
     raise AssertionError('There was no Client Hello randomness in the log of a client, aborting')
 
 
-def run_single_session(request_index: int, sut_name: str, use_sentinel: bool, wait_time: float, enable_skip_ccs_fin: bool, enable_noskip_ccs_fin: bool) -> (str, str, bool):
+def run_single_session(request_index: int, sut_name: str, use_sentinel: bool, wait_time: float, enable_skip_ccs_fin: bool, enable_noskip_ccs_fin: bool, twoclass: bool, oneclass: bool) -> (str, str, bool):
     config_files = ['./config/base.conf',
                     f'./config/{sut_name}.conf']
     if enable_skip_ccs_fin:
@@ -31,13 +31,22 @@ def run_single_session(request_index: int, sut_name: str, use_sentinel: bool, wa
             skip_ccs_fin = False
         else:
             print('At least one of --skip or --noskip must be selected')
+            skip_ccs_fin = False
             exit(1)
-    test_cases = ['Correctly_formatted_PKCS#1_PMS_message',
-                  'Wrong_separator_(0x00_set_to_0x17)',
-                  'Invalid_TLS_version_in_PMS',
-                  'Wrong_first_byte_(0x00_set_to_0x17)',
-                  'Wrong_second_byte_(0x02_set_to_0x17)',
-                  'Wrong_separator_position_(44)']
+
+    if oneclass:
+        test_cases = ['Wrong_first_byte_(0x00_set_to_0x17)']
+    elif twoclass:
+        test_cases = ['Correctly_formatted_PKCS#1_PMS_message',
+                      'Invalid_TLS_version_in_PMS']
+    else:
+        test_cases = ['Correctly_formatted_PKCS#1_PMS_message',
+                      'Wrong_separator_(0x00_set_to_0x17)',
+                      'Invalid_TLS_version_in_PMS',
+                      'Wrong_first_byte_(0x00_set_to_0x17)',
+                      'Wrong_second_byte_(0x02_set_to_0x17)',
+                      'Wrong_separator_position_(44)']
+
     current_case = choice(test_cases)
     config_files.append(f'./config/{current_case}.conf')
     if skip_ccs_fin:
@@ -69,8 +78,8 @@ def run_single_session(request_index: int, sut_name: str, use_sentinel: bool, wa
     return client_hello_random, current_case, skip_ccs_fin
 
 
-def run_multiple_clients(repetitions: int, sut_name: str, use_sentinel: bool, wait_time: float, skip: bool, noskip: bool, parallelization_factor: int):
-    request_arguments = [[index, sut_name, use_sentinel, wait_time, skip, noskip] for index in range(repetitions)]
+def run_multiple_clients(repetitions: int, sut_name: str, use_sentinel: bool, wait_time: float, skip: bool, noskip: bool, parallelization_factor: int, twoclass: bool, oneclass: bool):
+    request_arguments = [[index, sut_name, use_sentinel, wait_time, skip, noskip, twoclass, oneclass] for index in range(repetitions)]
     with multiprocessing.Pool(processes=parallelization_factor) as pool:
         results = pool.starmap(run_single_session, request_arguments)
     results_dataframe = pandas.DataFrame(results, columns=['client_hello_random', 'label', 'skipped_ccs_fin'])
@@ -93,9 +102,13 @@ parser.add_argument('--skip', action='store_true', default=False,
                     help='Make some request where the client omits ChangeCipherSpec and Finished')
 parser.add_argument('--noskip', action='store_true', default=False,
                     help='Make some request where the client properly sends ChangeCipherSpec and Finished')
-parser.add_argument('--processes', type=int, default=cpu_count(),
+parser.add_argument('--processes', type=int, default=1,
                     help='Parallelization factor, how many processes to use concurrently')
+parser.add_argument('--twoclass', action='store_true', default=False,
+                    help='Only choose between correct padding and wrong version number manipulations')
+parser.add_argument('--oneclass', action='store_true', default=False,
+                    help='Instead of randomly choosing between all manipulations, choose only wrong first byte')
 args = parser.parse_args()
-request_results = run_multiple_clients(args.repetitions, args.name, args.sentinel, args.wait, args.skip, args.noskip, args.processes)
+request_results = run_multiple_clients(args.repetitions, args.name, args.sentinel, args.wait, args.skip, args.noskip, args.processes, args.twoclass, args.oneclass)
 request_results.to_csv(f'{args.folder}/Client Requests.csv')
 request_results.to_excel(f'{args.folder}/Client Requests.xlsx')
