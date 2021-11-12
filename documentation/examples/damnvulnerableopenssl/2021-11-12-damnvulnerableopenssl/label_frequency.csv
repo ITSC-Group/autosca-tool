@@ -1,0 +1,12 @@
+,label,missing_ccs_fin,Frequency,ratio_1_0
+0,0X00 In Pkcs#1 Padding (First 8 Bytes After 0X00 0X02),False,56,1.435897435897436
+1,0X00 In Some Padding Byte,False,43,1.1025641025641026
+2,0X00 On The Last Position  (|Pms| = 0),False,43,1.1025641025641026
+3,0X00 On The Next To Last Position (|Pms| = 1),False,52,1.3333333333333333
+4,Correctly Formatted Pkcs#1 Message  (|Pms| = 47),False,46,1.1794871794871795
+5,Correctly Formatted Pkcs#1 Pms Message,False,39,1.0
+6,Correctly Formatted Pkcs#1 Pms Message  But 1 Byte Shorter,False,43,1.1025641025641026
+7,Invalid Tls Version In Pms,False,42,1.0769230769230769
+8,No 0X00 In Message,False,52,1.3333333333333333
+9,Wrong First Byte (0X00 Set To 0X17),False,40,1.0256410256410255
+10,Wrong Second Byte (0X02 Set To 0X17),False,44,1.1282051282051282

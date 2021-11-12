@@ -1,0 +1,15 @@
+--- a/library/debug.c	2021-06-28 06:35:43.918436000 +0200
++++ b/library/debug.c	2021-07-08 12:03:49.947288519 +0200
+@@ -231,6 +231,12 @@
+     {
+         return;
+     }
++    
++    if (X->n <= 0)
++    {
++        debug_send_line( ssl, level, file, line, "X->n <= 0!!\n");
++        return;
++    }
+ 
+     for( n = X->n - 1; n > 0; n-- )
+         if( X->p[n] != 0 )

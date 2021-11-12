@@ -1,0 +1,23 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+
+[requires]
+
+[packages]
+bottleneck = "*"
+setuptools = "*"
+numpy = "*"
+scipy = "*"
+scikit-learn = "==0.23.2"
+scikit-optimize = "*"
+pandas = "*"
+h5py = "*"
+python-dateutil = "*"
+statsmodels = "*"
+matplotlib = "*"
+seaborn ="*"
+jupyter = "*"

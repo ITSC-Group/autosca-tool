@@ -1,0 +1,11 @@
+,Dataset,fisher-pval-single,fisher-pval-single-count,fisher-pval-sum,fisher-pval-sum-count,fisher-pval-median,fisher-pval-median-count,fisher-pval-mean,fisher-pval-mean-count,fisher-pval-holm-bonferroni,fisher-pval-holm-bonferroni-count,corrected-ttest-pval-random,corrected-ttest-pval-random-count,corrected-ttest-pval-majority,corrected-ttest-pval-majority-count,corrected-ttest-pval-prior,corrected-ttest-pval-prior-count,ttest-pval-random,ttest-pval-random-count,ttest-pval-majority,ttest-pval-majority-count,ttest-pval-prior,ttest-pval-prior-count,wilcoxon-pval-random,wilcoxon-pval-random-count,wilcoxon-pval-majority,wilcoxon-pval-majority-count,wilcoxon-pval-prior,wilcoxon-pval-prior-count
+0,0X00 In Pkcs#1 Padding (First 8 Bytes After 0X00 0X02),True,10,True,10,True,10,True,8,True,10,True,8,True,2,True,8,True,10,True,3,True,10,False,0,False,0,False,0
+1,0X00 In Some Padding Byte,False,0,True,1,False,0,False,0,False,0,False,0,False,0,False,0,False,0,True,1,False,0,False,0,False,0,False,0
+2,0X00 On The Last Position  (|Pms| = 0),False,0,False,0,False,0,False,0,False,0,False,0,False,0,False,0,False,0,False,0,False,0,False,0,False,0,False,0
+3,0X00 On The Next To Last Position (|Pms| = 1),False,0,False,0,False,0,False,0,False,0,False,0,False,0,False,0,False,0,False,0,False,0,False,0,False,0,False,0
+4,Correctly Formatted Pkcs#1 Message  (|Pms| = 47),False,0,False,0,False,0,False,0,False,0,False,0,False,0,False,0,False,0,False,0,False,0,False,0,False,0,False,0
+5,Correctly Formatted Pkcs#1 Pms Message  But 1 Byte Shorter,True,10,True,10,True,10,True,8,True,9,True,8,True,8,True,8,True,9,True,10,True,10,False,0,False,0,False,0
+6,Invalid Tls Version In Pms,False,0,True,1,False,0,False,0,False,0,False,0,False,0,False,0,False,0,True,1,False,0,False,0,False,0,False,0
+7,No 0X00 In Message,True,10,True,10,True,9,True,8,True,9,True,8,True,8,True,8,True,9,True,9,True,9,False,0,False,0,False,0
+8,Wrong First Byte (0X00 Set To 0X17),True,9,True,10,True,10,True,8,True,8,True,8,False,0,True,8,True,10,True,1,True,9,False,0,False,0,False,0
+9,Wrong Second Byte (0X02 Set To 0X17),True,10,True,10,True,8,True,8,True,8,True,8,True,8,True,8,True,10,True,9,True,9,False,0,False,0,False,0

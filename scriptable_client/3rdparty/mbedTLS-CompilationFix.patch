@@ -1,0 +1,11 @@
+--- a/CMakeLists.txt	2021-06-28 06:35:43.894435000 +0200
++++ b/CMakeLists.txt	2021-07-02 09:24:15.404132924 +0200
+@@ -198,7 +198,7 @@
+         endif()
+     endif()
+     if (GCC_VERSION VERSION_GREATER 7.0 OR GCC_VERSION VERSION_EQUAL 7.0)
+-      set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wformat-overflow=2 -Wformat-truncation=2")
++      set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wformat-overflow=2 -Wformat-truncation")
+     endif()
+     set(CMAKE_C_FLAGS_RELEASE     "-O2")
+     set(CMAKE_C_FLAGS_DEBUG       "-O0 -g3")

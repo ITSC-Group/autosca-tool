@@ -1,0 +1,11 @@
+--- a/include/mbedtls/config.h	2021-06-28 06:35:43.902435000 +0200
++++ b/include/mbedtls/config.h	2021-07-02 08:45:52.365548568 +0200
+@@ -2251,7 +2251,7 @@
+  *
+  * Uncomment to enable use of ZLIB
+  */
+-//#define MBEDTLS_ZLIB_SUPPORT
++#define MBEDTLS_ZLIB_SUPPORT
+ /* \} name SECTION: mbed TLS feature support */
+ 
+ /**

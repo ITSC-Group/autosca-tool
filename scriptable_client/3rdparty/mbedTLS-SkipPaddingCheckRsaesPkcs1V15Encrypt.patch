@@ -1,0 +1,108 @@
+--- a/include/mbedtls/rsa.h	2021-07-01 15:04:46.745892000 +0200
++++ b/include/mbedtls/rsa.h	2021-07-14 08:58:10.895192644 +0200
+@@ -134,6 +134,9 @@
+     unsigned int wrong_first_byte_value; /*!< wrong first byte value used in RSAES-PKCS1-V1_5-ENCRYPT */
+     unsigned int wrong_block_type_value; /*!< wrong block type value used in RSAES-PKCS1-V1_5-ENCRYPT */
+     unsigned char wrong_padding_value; /*!< wrong padding value used in RSAES-PKCS1-V1_5-ENCRYPT */
++    unsigned int skip_first_byte_check : 1;  /*!< skip first byte check in RSAES-PKCS1-V1_5-ENCRYPT */
++    unsigned int skip_block_type_check : 1;  /*!< skip block type check in RSAES-PKCS1-V1_5-ENCRYPT */
++    unsigned int skip_padding_value_check : 1;  /*!< skip padding value check in RSAES-PKCS1-V1_5-ENCRYPT */
+                                      
+ #if defined(MBEDTLS_THREADING_C)
+     /* Invariant: the mutex is initialized iff ver != 0. */
+--- a/include/mbedtls/ssl.h	2021-07-01 15:20:12.541704000 +0200
++++ b/include/mbedtls/ssl.h	2021-07-14 09:01:41.462709121 +0200
+@@ -1205,6 +1205,7 @@
+     uint16_t pms_random_byte_index; /*!< indicate which byte of the random will be set to zero */
+     uint16_t server_simulation_id; /*!< indicate if and which server will be simulated */
+     useconds_t server_simulation_delay; /*!< indicate the amount of delay to simulate in microseconds */
++    unsigned int skip_pms_version_check : 1; /*!< indicate if check of the version in the pre-master secret will be skipped */
+ };
+ 
+ struct mbedtls_ssl_context
+--- a/library/rsa.c	2021-07-01 13:37:23.347314000 +0200
++++ b/library/rsa.c	2021-07-14 13:48:42.549100619 +0200
+@@ -1664,13 +1664,28 @@
+ 
+     /* Check and get padding length in constant time and constant
+      * memory trace. The first byte must be 0. */
+-    bad |= buf[0];
++    if ( ctx->skip_first_byte_check != 0 )
++    {
++        mbedtls_printf( "RSAES-PKCS1-V1_5-DECRYPT: skip first byte check\n" );
++    }
++    else
++    {
++        bad |= buf[0];
++    }
+ 
+     if( mode == MBEDTLS_RSA_PRIVATE )
+     {
+         /* Decode EME-PKCS1-v1_5 padding: 0x00 || 0x02 || PS || 0x00
+          * where PS must be at least 8 nonzero bytes. */
+-        bad |= buf[1] ^ MBEDTLS_RSA_CRYPT;
++         
++        if ( ctx->skip_block_type_check != 0 )
++        {
++            mbedtls_printf( "RSAES-PKCS1-V1_5-DECRYPT: skip block type byte check\n" );
++        }
++        else
++        {
++            bad |= buf[1] ^ MBEDTLS_RSA_CRYPT;
++        }
+ 
+         /* Read the whole buffer. Set pad_done to nonzero if we find
+          * the 0x00 byte and remember the padding length in pad_count. */
+@@ -1697,11 +1712,19 @@
+         }
+     }
+ 
+-    /* If pad_done is still zero, there's no data, only unfinished padding. */
+-    bad |= if_int( pad_done, 0, 1 );
++    if ( ctx->skip_padding_value_check != 0 )
++    {
++        mbedtls_printf( "RSAES-PKCS1-V1_5-DECRYPT: skip delimiter byte check\n" );
++        bad |= 1;
++    }
++    else
++    {
++        /* If pad_done is still zero, there's no data, only unfinished padding. */
++        bad |= if_int( pad_done, 0, 1 );
+ 
+-    /* There must be at least 8 bytes of padding. */
+-    bad |= size_greater_than( 8, pad_count );
++        /* There must be at least 8 bytes of padding. */
++        bad |= size_greater_than( 8, pad_count );
++    }
+ 
+     /* If the padding is valid, set plaintext_size to the number of
+      * remaining bytes after stripping the padding. If the padding
+--- a/library/ssl_srv.c	2021-07-01 15:04:25.437973000 +0200
++++ b/library/ssl_srv.c	2021-07-14 15:53:27.831429180 +0200
+@@ -4016,8 +4016,16 @@
+      * attacks. */
+     diff  = (unsigned int) ret;
+     diff |= peer_pmslen ^ 48;
+-    diff |= peer_pms[0] ^ ver[0];
+-    diff |= peer_pms[1] ^ ver[1];
++    
++    if ( ssl->conf->skip_pms_version_check != 0 )
++    {
++        MBEDTLS_SSL_DEBUG_MSG( 2, ( "skip the version check in the pre-master secret" ) );
++    }
++    else
++    {
++        diff |= peer_pms[0] ^ ver[0];
++        diff |= peer_pms[1] ^ ver[1];
++    }
+ 
+     /* mask = diff ? 0xff : 0x00 using bit operations to avoid branches */
+     /* MSVC has a warning about unary minus on unsigned, but this is
+@@ -4060,6 +4068,7 @@
+         return( MBEDTLS_ERR_SSL_INTERNAL_ERROR );
+     }
+     ssl->handshake->pmslen = 48;
++    
+ 
+     /* Set pms to either the true or the fake PMS, without
+      * data-dependent branches. */

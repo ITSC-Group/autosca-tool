@@ -1,0 +1,95 @@
+,machine,human
+0,TLS0:tcp.srcport,TCP Source Port of the first TLS Alert
+1,TLS0:tcp.dstport,TCP Destination Port of the first TLS Alert
+2,TLS0:tcp.port,TCP Source or Destination Port of the first TLS Alert
+3,TLS0:tcp.stream,TCP Stream index of the first TLS Alert
+4,TLS0:tcp.len,TCP Segment Len of the first TLS Alert
+5,TLS0:tcp.seq,TCP Sequence number of the first TLS Alert
+6,TLS0:tcp.nxtseq,TCP Next sequence number of the first TLS Alert
+7,TLS0:tcp.ack,TCP Acknowledgment number of the first TLS Alert
+8,TLS0:tcp.hdr_len,TCP 1000 .... = Header Length of the first TLS Alert
+9,TLS0:tcp.flags.res,TCP 000. .... .... = Reserved of the first TLS Alert
+10,TLS0:tcp.flags.ns,TCP ...0 .... .... = Nonce of the first TLS Alert
+11,TLS0:tcp.flags.cwr,TCP .... 0... .... = Congestion Window Reduced (CWR) of the first TLS Alert
+12,TLS0:tcp.flags.ecn,TCP .... .0.. .... = ECN-Echo of the first TLS Alert
+13,TLS0:tcp.flags.urg,TCP .... ..0. .... = Urgent of the first TLS Alert
+14,TLS0:tcp.flags.ack,TCP .... ...1 .... = Acknowledgment of the first TLS Alert
+15,TLS0:tcp.flags.push,TCP .... .... 1... = Push of the first TLS Alert
+16,TLS0:tcp.flags.reset,TCP .... .... .0.. = Reset of the first TLS Alert
+17,TLS0:tcp.flags.syn,TCP .... .... ..0. = Syn of the first TLS Alert
+18,TLS0:tcp.flags.fin,TCP .... .... ...0 = Fin of the first TLS Alert
+19,TLS0:tcp.window_size_value,TCP Window size value of the first TLS Alert
+20,TLS0:tcp.window_size,TCP Calculated window size of the first TLS Alert
+21,TLS0:tcp.window_size_scalefactor,TCP Window size scaling factor of the first TLS Alert
+22,TLS0:tcp.checksum.status,TCP Checksum Status of the first TLS Alert
+23,TLS0:tcp.urgent_pointer,TCP Urgent pointer of the first TLS Alert
+24,TLS0:tcp.options.nop,TCP tcp.options.nop of the first TLS Alert
+25,TLS0:tcp.option_kind,TCP Kind of the first TLS Alert
+26,TLS0:tcp.option_len,TCP Length of the first TLS Alert
+27,TLS0:tcp.options.timestamp.tsval,TCP Timestamp value of the first TLS Alert
+28,TLS0:tcp.time_delta,Time since previous frame in this TCP stream of the first TLS Alert
+29,TLS0:ssl.record.content_type,SSL Content Type of the first TLS Alert
+30,TLS0:ssl.record.length,SSL Length of the first TLS Alert
+31,TLS0:ssl.alert_message.level,SSL Level of the first TLS Alert
+32,TLS0:ssl.alert_message.desc,SSL Description of the first TLS Alert
+33,TLS0:order,Message order of the first TLS Alert within the server responses
+34,DISC0:tcp.srcport,TCP Source Port of the first TCP Disconnect
+35,DISC0:tcp.dstport,TCP Destination Port of the first TCP Disconnect
+36,DISC0:tcp.port,TCP Source or Destination Port of the first TCP Disconnect
+37,DISC0:tcp.stream,TCP Stream index of the first TCP Disconnect
+38,DISC0:tcp.len,TCP Segment Len of the first TCP Disconnect
+39,DISC0:tcp.seq,TCP Sequence number of the first TCP Disconnect
+40,DISC0:tcp.nxtseq,TCP Next sequence number of the first TCP Disconnect
+41,DISC0:tcp.ack,TCP Acknowledgment number of the first TCP Disconnect
+42,DISC0:tcp.hdr_len,TCP 1000 .... = Header Length of the first TCP Disconnect
+43,DISC0:tcp.flags.res,TCP 000. .... .... = Reserved of the first TCP Disconnect
+44,DISC0:tcp.flags.ns,TCP ...0 .... .... = Nonce of the first TCP Disconnect
+45,DISC0:tcp.flags.cwr,TCP .... 0... .... = Congestion Window Reduced (CWR) of the first TCP Disconnect
+46,DISC0:tcp.flags.ecn,TCP .... .0.. .... = ECN-Echo of the first TCP Disconnect
+47,DISC0:tcp.flags.urg,TCP .... ..0. .... = Urgent of the first TCP Disconnect
+48,DISC0:tcp.flags.ack,TCP .... ...1 .... = Acknowledgment of the first TCP Disconnect
+49,DISC0:tcp.flags.push,TCP .... .... 0... = Push of the first TCP Disconnect
+50,DISC0:tcp.flags.reset,TCP .... .... .0.. = Reset of the first TCP Disconnect
+51,DISC0:tcp.flags.syn,TCP .... .... ..0. = Syn of the first TCP Disconnect
+52,DISC0:tcp.flags.fin,TCP .... .... ...1 = Fin of the first TCP Disconnect
+53,DISC0:tcp.window_size_value,TCP Window size value of the first TCP Disconnect
+54,DISC0:tcp.window_size,TCP Calculated window size of the first TCP Disconnect
+55,DISC0:tcp.window_size_scalefactor,TCP Window size scaling factor of the first TCP Disconnect
+56,DISC0:tcp.checksum.status,TCP Checksum Status of the first TCP Disconnect
+57,DISC0:tcp.urgent_pointer,TCP Urgent pointer of the first TCP Disconnect
+58,DISC0:tcp.options.nop,TCP tcp.options.nop of the first TCP Disconnect
+59,DISC0:tcp.option_kind,TCP Kind of the first TCP Disconnect
+60,DISC0:tcp.option_len,TCP Length of the first TCP Disconnect
+61,DISC0:tcp.options.timestamp.tsval,TCP Timestamp value of the first TCP Disconnect
+62,DISC0:tcp.time_delta,Time since previous frame in this TCP stream of the first TCP Disconnect
+63,DISC0:order,Message order of the first TCP Disconnect within the server responses
+64,DISC1:tcp.srcport,TCP Source Port of the second TCP Disconnect
+65,DISC1:tcp.dstport,TCP Destination Port of the second TCP Disconnect
+66,DISC1:tcp.port,TCP Source or Destination Port of the second TCP Disconnect
+67,DISC1:tcp.stream,TCP Stream index of the second TCP Disconnect
+68,DISC1:tcp.len,TCP Segment Len of the second TCP Disconnect
+69,DISC1:tcp.seq,TCP Sequence number of the second TCP Disconnect
+70,DISC1:tcp.nxtseq,TCP Next sequence number of the second TCP Disconnect
+71,DISC1:tcp.ack,TCP Acknowledgment number of the second TCP Disconnect
+72,DISC1:tcp.hdr_len,TCP 1000 .... = Header Length of the second TCP Disconnect
+73,DISC1:tcp.flags.res,TCP 000. .... .... = Reserved of the second TCP Disconnect
+74,DISC1:tcp.flags.ns,TCP ...0 .... .... = Nonce of the second TCP Disconnect
+75,DISC1:tcp.flags.cwr,TCP .... 0... .... = Congestion Window Reduced (CWR) of the second TCP Disconnect
+76,DISC1:tcp.flags.ecn,TCP .... .0.. .... = ECN-Echo of the second TCP Disconnect
+77,DISC1:tcp.flags.urg,TCP .... ..0. .... = Urgent of the second TCP Disconnect
+78,DISC1:tcp.flags.ack,TCP .... ...1 .... = Acknowledgment of the second TCP Disconnect
+79,DISC1:tcp.flags.push,TCP .... .... 0... = Push of the second TCP Disconnect
+80,DISC1:tcp.flags.reset,TCP .... .... .0.. = Reset of the second TCP Disconnect
+81,DISC1:tcp.flags.syn,TCP .... .... ..0. = Syn of the second TCP Disconnect
+82,DISC1:tcp.flags.fin,TCP .... .... ...0 = Fin of the second TCP Disconnect
+83,DISC1:tcp.window_size_value,TCP Window size value of the second TCP Disconnect
+84,DISC1:tcp.window_size,TCP Calculated window size of the second TCP Disconnect
+85,DISC1:tcp.window_size_scalefactor,TCP Window size scaling factor of the second TCP Disconnect
+86,DISC1:tcp.checksum.status,TCP Checksum Status of the second TCP Disconnect
+87,DISC1:tcp.urgent_pointer,TCP Urgent pointer of the second TCP Disconnect
+88,DISC1:tcp.options.nop,TCP tcp.options.nop of the second TCP Disconnect
+89,DISC1:tcp.option_kind,TCP Kind of the second TCP Disconnect
+90,DISC1:tcp.option_len,TCP Length of the second TCP Disconnect
+91,DISC1:tcp.options.timestamp.tsval,TCP Timestamp value of the second TCP Disconnect
+92,DISC1:tcp.time_delta,Time since previous frame in this TCP stream of the second TCP Disconnect
+93,DISC1:order,Message order of the second TCP Disconnect within the server responses

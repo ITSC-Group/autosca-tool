@@ -1,0 +1,65 @@
+--- a/include/mbedtls/rsa.h	2021-06-28 06:35:43.906436000 +0200
++++ b/include/mbedtls/rsa.h	2021-07-01 10:14:33.906293250 +0200
+@@ -129,6 +129,12 @@
+                                      as specified in md.h for use in the MGF
+                                      mask generating function used in the
+                                      EME-OAEP and EMSA-PSS encodings. */
++
++    unsigned int use_wrong_padding : 1; /*!< use an incorrect padding value in RSAES-PKCS1-V1_5-ENCRYPT */
++    unsigned int wrong_first_byte_value; /*!< wrong first byte value used in RSAES-PKCS1-V1_5-ENCRYPT */
++    unsigned int wrong_block_type_value; /*!< wrong block type value used in RSAES-PKCS1-V1_5-ENCRYPT */
++    unsigned char wrong_padding_value; /*!< wrong padding value used in RSAES-PKCS1-V1_5-ENCRYPT */
++                                     
+ #if defined(MBEDTLS_THREADING_C)
+     /* Invariant: the mutex is initialized iff ver != 0. */
+     mbedtls_threading_mutex_t mutex;    /*!<  Thread-safety mutex. */
+--- a/library/rsa.c	2021-06-28 06:35:43.926437000 +0200
++++ b/library/rsa.c	2021-07-01 10:19:52.945083266 +0200
+@@ -1269,13 +1269,28 @@
+ 
+     nb_pad = olen - 3 - ilen;
+ 
+-    *p++ = 0;
++    if( ctx->use_wrong_padding != 0 )
++    {
++        *p++ = ctx->wrong_first_byte_value;
++    }
++    else
++    {
++        *p++ = 0;
++    }
++    
+     if( mode == MBEDTLS_RSA_PUBLIC )
+     {
+         if( f_rng == NULL )
+             return( MBEDTLS_ERR_RSA_BAD_INPUT_DATA );
+ 
+-        *p++ = MBEDTLS_RSA_CRYPT;
++        if( ctx->use_wrong_padding != 0 )
++        {
++            *p++ = ctx->wrong_block_type_value;
++        }
++        else
++        {
++            *p++ = MBEDTLS_RSA_CRYPT;
++        }
+ 
+         while( nb_pad-- > 0 )
+         {
+@@ -1300,7 +1315,15 @@
+             *p++ = 0xFF;
+     }
+ 
+-    *p++ = 0;
++    if( ctx->use_wrong_padding != 0 )
++    {
++        *p++ = ctx->wrong_padding_value;
++    }
++    else
++    {
++        *p++ = 0;
++    }
++    
+     if( ilen != 0 )
+         memcpy( p, input, ilen );
+ 

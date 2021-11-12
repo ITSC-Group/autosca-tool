@@ -1,0 +1,16 @@
+The server is Vulnerable to Class 0X00 In Pkcs#1 Padding (First 8 Bytes After 0X00 0X02) 
+Highest p-value 1.0, Lowest p-value 4.52230758745603e-05, Number of Algorithms 8 
+********************************************************************************
+The server is Vulnerable to Class Correctly Formatted Pkcs#1 Pms Message  But 1 Byte Shorter 
+Highest p-value 1.0, Lowest p-value 0.00032446701674363214, Number of Algorithms 8 
+********************************************************************************
+The server is Vulnerable to Class No 0X00 In Message 
+Highest p-value 1.0, Lowest p-value 0.00012159327401910421, Number of Algorithms 8 
+********************************************************************************
+The server is Vulnerable to Class Wrong First Byte (0X00 Set To 0X17) 
+Highest p-value 1.0, Lowest p-value 0.00669224255260587, Number of Algorithms 8 
+********************************************************************************
+The server is Vulnerable to Class Wrong Second Byte (0X02 Set To 0X17) 
+Highest p-value 1.0, Lowest p-value 0.00014327580879945907, Number of Algorithms 8 
+********************************************************************************
+The Server is Vulnerable to Side Channel attacks
