@@ -1,6 +1,7 @@
 # Automated Side-Channel Analysis Tool (AutoSCA-tool)
 
-<img src="documentation/logos/itsc.png" width="100" height="100" alt="ITSC Logo"/>
+<img src="documentation/logos/itsc.png" width="auto" height="100" alt="ITSC Logo"/> <img src="documentation/logos/sicp.png" width="auto" height="100" alt="SICP Logo"/>
+
 
 This tool is able to automatically test a TLS server for Bleichenbacher-like padding side channels.
 
