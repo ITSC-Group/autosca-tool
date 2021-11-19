@@ -147,8 +147,8 @@ echo "## Server Hostname/IP and Port" >> "$CONFIG"
 echo "$SUT_HOST:$SUT_PORT" >> "$CONFIG"
 
 if [ "$USE_TLS_ATTACKER" = "0" ]; then
-    echo "port=$SUT_PORT" > "$TOOL_FOLDER/scriptable_client/config/$SANITIZED_SUT_NAME.conf"
-    echo "host=$SUT_HOST" >> "$TOOL_FOLDER/scriptable_client/config/$SANITIZED_SUT_NAME.conf"
+    echo "port=$SUT_PORT" > "$TOOL_FOLDER/tls_test_tool_client/config/$SANITIZED_SUT_NAME.conf"
+    echo "host=$SUT_HOST" >> "$TOOL_FOLDER/tls_test_tool_client/config/$SANITIZED_SUT_NAME.conf"
 fi
 
 if [ -n "$SUT_INTERFACE" ]; then
@@ -186,8 +186,8 @@ if [ "$START_DOCKER" = "1" ]; then
 fi
 
 if [ "$USE_TLS_ATTACKER" = "0" ]; then
-    echo "Starting TLS client using the Achelos TLS Test Tool"
-    cd "$TOOL_FOLDER/scriptable_client" || exit
+    echo "Starting TLS client using the achelos TLS Test Tool"
+    cd "$TOOL_FOLDER/tls_test_tool_client" || exit
     # shellcheck disable=SC2086
     CLIENT_COMMAND="pipenv run python3 client.py --folder=\"$FOLDER\" --name=$SANITIZED_SUT_NAME $CLIENT_ARGUMENTS 2>&1 | tee \"$FOLDER/Scriptable Client.log\""
 else
