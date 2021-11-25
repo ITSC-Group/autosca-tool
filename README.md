@@ -42,7 +42,10 @@ You may need to adjust the `--interface` parameter to your local network interfa
 We are also using the `--wait` parameter to instruct the client to wait 1 second between each request.
 This can prevent flooding the target server with too many requests.
 
-### Citing Us:
+Citing AutoSCA
+----------------
+You can cite our `aisec paper`_::
+
 @inproceedings{autosca,
 	author = {Drees, Jan Peter and Gupta, Pritha and H\"{u}llermeier, Eyke and Jager, Tibor and Konze, Alexander and Priesterjahn, Claudia and Ramaswamy, Arunselvan and Somorovsky, Juraj},
 	title = {Automated Detection of Side Channels in Cryptographic Protocols: DROWN the ROBOTs!},
