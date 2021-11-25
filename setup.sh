@@ -5,9 +5,9 @@ pip3 install --user pipenv
 echo "After installing pipenv, you may need to restart your terminal"
 # source ~/.profile
 # git gets really funky with the executable flag on Mac vs Linux machines
-git config core.filemode false
+# git config core.filemode false
 
-git submodule update --recursive --remote --init
+# git submodule update --recursive --remote --init
 
 echo "Installing scriptable client dependencies" 
 cd "$TOOL_FOLDER/scriptable_client" || exit
@@ -25,4 +25,12 @@ pipenv install
 echo "Building TLS attacker client"
 cd "$TOOL_FOLDER/tls_attacker_client" || exit
 mvn clean install
+
+echo "Building TLS test tool client"
+cd "$TOOL_FOLDER/tls_test_tool_client" || exit
+mkdir -f build
+cd build || exit
+cmake -DCMAKE_BUILD_TYPE=Release ..
+cmake --build .
+cp "$TOOL_FOLDER/tls_test_tool_client/build/src/TlsTestTool" "$TOOL_FOLDER/tls_test_tool_client/TlsTestTool"
 
