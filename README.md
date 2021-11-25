@@ -41,3 +41,21 @@ The following example will check a remote server for Bleichenbacher side channel
 You may need to adjust the `--interface` parameter to your local network interface name.
 We are also using the `--wait` parameter to instruct the client to wait 1 second between each request.
 This can prevent flooding the target server with too many requests.
+
+### Citing Us:
+@inproceedings{autosca,
+	author = {Drees, Jan Peter and Gupta, Pritha and H\"{u}llermeier, Eyke and Jager, Tibor and Konze, Alexander and Priesterjahn, Claudia and Ramaswamy, Arunselvan and Somorovsky, Juraj},
+	title = {Automated Detection of Side Channels in Cryptographic Protocols: DROWN the ROBOTs!},
+	year = {2021},
+	isbn = {9781450386579},
+	publisher = {Association for Computing Machinery},
+	address = {New York, NY, USA},
+	url = {https://doi.org/10.1145/3474369.3486868},
+	doi = {10.1145/3474369.3486868},
+	booktitle = {Proceedings of the 14th ACM Workshop on Artificial Intelligence and Security},
+	pages = {169–180},
+	numpages = {12},
+	keywords = {tls, bleichenbacher, side channel, machine learning},
+	location = {Virtual Event, Republic of Korea},
+	series = {AISec '21}
+}
