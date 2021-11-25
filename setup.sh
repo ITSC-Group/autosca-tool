@@ -28,7 +28,7 @@ mvn clean install
 
 echo "Building TLS test tool client"
 cd "$TOOL_FOLDER/tls_test_tool_client" || exit
-mkdir -f build
+mkdir -p build
 cd build || exit
 cmake -DCMAKE_BUILD_TYPE=Release ..
 cmake --build .
