@@ -8,7 +8,7 @@ This tool is able to automatically test a TLS server for Bleichenbacher-like pad
 ## Installation
 First, ensure that the following packages (and a working C compiler) are installed:
 
-```python3 pip3 libxml2-dev libxslt-dev tcpdump tshark default-jre maven```
+```python3 pip3 libxml2-dev libxslt-dev tcpdump tshark default-jre maven cmake```
 
 Then run the shell script `setup.sh` in a terminal of your choice.
 It should take care of the entire setup for you.

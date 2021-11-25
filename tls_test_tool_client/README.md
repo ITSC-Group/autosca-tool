@@ -17,14 +17,14 @@ the required software can be acquired by installing the build-essential and cmak
 To build the tool from the command line, perform the following steps:
 
 ```bash
-cd [...]/autosca
+cd tls_test_tool_client
 mkdir build
 cd build
 cmake -DCMAKE_BUILD_TYPE=Release ..
 cmake --build .
 ```
 
-After a successful buid, the TlsTestTool can be found in the src sub-directory. 
+After a successful build, the TlsTestTool binary can be found at `build/src/TlsTestTool`. 
 
 ## Configuration
 The available arguments for configuring the TLS Test Tool are described here. Values that a user
