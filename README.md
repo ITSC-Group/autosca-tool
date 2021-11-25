@@ -50,7 +50,7 @@ This repository contains the code used for simmulations in the paper "Automated 
 
 Citing AutoSCA
 ----------------
-You can cite our [published version]::
+You can cite our [published version](https://dl.acm.org/doi/abs/10.1145/3474369.3486868):
 
 	@inproceedings{autosca,
 		author = {Drees, Jan Peter and Gupta, Pritha and H\"{u}llermeier, Eyke and Jager, Tibor and Konze, Alexander and Priesterjahn, Claudia and Ramaswamy, Arunselvan and Somorovsky, Juraj},
