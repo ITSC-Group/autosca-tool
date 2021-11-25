@@ -189,12 +189,12 @@ if [ "$USE_TLS_ATTACKER" = "0" ]; then
     echo "Starting TLS client using the achelos TLS Test Tool"
     cd "$TOOL_FOLDER/tls_test_tool_client" || exit
     # shellcheck disable=SC2086
-    CLIENT_COMMAND="pipenv run python3 client.py --folder=\"$FOLDER\" --name=$SANITIZED_SUT_NAME $CLIENT_ARGUMENTS 2>&1 | tee \"$FOLDER/Scriptable Client.log\""
+    CLIENT_COMMAND="pipenv run python3 client.py --folder=\"$FOLDER\" --name=$SANITIZED_SUT_NAME $CLIENT_ARGUMENTS 2>&1 | tee \"$FOLDER/TLS Test Tool Client.log\""
 else
     echo "Starting TLS client using the RUB TLS Attacker"
     cd "$TOOL_FOLDER/tls_attacker_client" || exit
     # shellcheck disable=SC2086
-    CLIENT_COMMAND="java -jar apps/ML-BleichenbacherGenerator.jar -connect $SUT_HOST:$SUT_PORT --folder \"$FOLDER\" $CLIENT_ARGUMENTS 2>&1 | tee \"$FOLDER/TLS Attacker.log\""
+    CLIENT_COMMAND="java -jar apps/ML-BleichenbacherGenerator.jar -connect $SUT_HOST:$SUT_PORT --folder \"$FOLDER\" $CLIENT_ARGUMENTS 2>&1 | tee \"$FOLDER/TLS Attacker Client.log\""
 fi
 echo "## Client Command" >> "$CONFIG"
 echo "$CLIENT_COMMAND" >> "$CONFIG"
