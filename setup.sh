@@ -9,8 +9,8 @@ echo "After installing pipenv, you may need to restart your terminal"
 
 # git submodule update --recursive --remote --init
 
-echo "Installing scriptable client dependencies" 
-cd "$TOOL_FOLDER/scriptable_client" || exit
+echo "Installing TLS test tool client dependencies"
+cd "$TOOL_FOLDER/tls_test_tool_client" || exit
 pipenv install
 git config core.filemode false
 echo "Installing feature extraction dependencies"
