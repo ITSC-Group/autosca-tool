@@ -92,17 +92,18 @@ def init_plots(df, extension, metric, figsize):
 
 def bar_grid_for_dataset(df, metric, std, folder, figsize=(7, 4), extension='png', logger=None):
     bar_width, df, fig_param, index, opacity, u_datasets, u_models, end = init_plots(df, extension, figsize, metric)
-    if len(u_datasets) % 4 == 0:
-        c = 4
-        r = int(len(u_datasets) / c)
-    elif len(u_datasets) % 3 == 0:
+    n_datasets = len(u_datasets)
+    if n_datasets < 8:
+        c = 2
+    elif n_datasets < 16:
         c = 3
-        r = int(len(u_datasets) / c)
+    elif n_datasets < 25:
+        c = 4
     else:
         c = 5
-        r = int(len(u_datasets) / c) + 1
+    r = int(np.ceil(n_datasets / c))
     figsize = (figsize[0] * r, figsize[1] * c)
-    logger.info('Datasets {}, figsize {}, rows {}, cols {}'.format(len(u_datasets), figsize, r, c))
+    logger.info('Datasets {}, figsize {}, rows {}, cols {}'.format(n_datasets, figsize, r, c))
     fig, axs = plt.subplots(nrows=r, ncols=c, sharex=True, sharey=True, figsize=figsize, frameon=True, edgecolor='k',
                             facecolor='white')
     plt.figure()
