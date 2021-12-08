@@ -6,6 +6,8 @@ from sklearn.tree import DecisionTreeClassifier, ExtraTreeClassifier
 from skopt.space import Categorical, Integer, Real
 from .baseline import *
 
+from .mlp import MultiLayerPerceptron
+
 custom_dict = {RandomClassifier.__name__: 0,
                MajorityVoting.__name__: 1,
                PriorClassifier.__name__: 2,
@@ -19,16 +21,35 @@ custom_dict = {RandomClassifier.__name__: 0,
                DecisionTreeClassifier.__name__: 7,
                ExtraTreeClassifier.__name__: 8,
 
-               RandomForestClassifier.__name__: 9,
-               ExtraTreesClassifier.__name__: 10,
+               MultiLayerPerceptron.__name__: 9,
 
-               AdaBoostClassifier.__name__: 11,
-               GradientBoostingClassifier.__name__: 12}
+               RandomForestClassifier.__name__: 10,
+               ExtraTreesClassifier.__name__: 11,
+
+               AdaBoostClassifier.__name__: 12,
+               GradientBoostingClassifier.__name__: 13,
+               }
 
 classifiers_space = []
 classifiers_space.append((RandomClassifier, {}, {}))
 classifiers_space.append((MajorityVoting, {}, {}))
 classifiers_space.append((PriorClassifier, {}, {}))
+
+clf = MultiLayerPerceptron
+params = dict(n_hidden=2, n_units=10, activation='relu', solver='sgd', alpha=0.0001, batch_size='auto',
+              learning_rate='constant', learning_rate_init=0.001, power_t=0.5, max_iter=200, shuffle=True,
+              random_state=None, tol=0.0001, verbose=False, warm_start=False, momentum=0.9, nesterovs_momentum=True,
+              early_stopping=False, validation_fraction=0.1, beta_1=0.9, beta_2=0.999, epsilon=1e-08,
+              n_iter_no_change=10, max_fun=15000)
+search_space = {"n_hidden": Integer(2, 10),
+                "n_units": Integer(2, 20),
+                "learning_rate_init": Real(1e-6, 1e-2, 'log-uniform'),
+                "alpha": Real(1e-3, 1e-1, 'log-uniform'),
+                "solver": Categorical(["adam", "sgd"]),
+                "learning_rate": Categorical(['constant', 'invscaling', 'adaptive']),
+                "early_stopping": Categorical([True, False])
+                }
+classifiers_space.append((clf, params, search_space))
 
 clf = LogisticRegression
 params = dict(penalty='l2', dual=False, tol=0.0001, C=1.0, fit_intercept=True, intercept_scaling=1,
@@ -118,6 +139,7 @@ search_space = {"criterion": Categorical(["gini", "entropy"]),
                 }
 classifiers_space.append((clf, params, search_space))
 
+
 clf = ExtraTreesClassifier
 params = dict(bootstrap=True, class_weight=None, criterion='gini', max_depth=14, max_features='sqrt',
               max_leaf_nodes=None, min_impurity_decrease=0.0, min_impurity_split=None, min_samples_leaf=2,
@@ -156,3 +178,4 @@ search_space = {"criterion": Categorical(["friedman_mse", "mse", "mae"]),
                 "n_estimators": Integer(50, 300)
                 }
 classifiers_space.append((clf, params, search_space))
+

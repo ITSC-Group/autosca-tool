@@ -8,6 +8,7 @@ from itertools import product
 from scipy.stats import fisher_exact
 from statsmodels.stats.multitest import multipletests
 
+from classification_model.result_directories import ResultDirectories
 from pycsca import *
 from utils import test_size, cols_metrics, cols_pvals, columns
 
@@ -37,18 +38,14 @@ if __name__== "__main__":
     parser.add_argument('-f', '--folder', required=True,
                         help='Folder that contains the input files Packets.pcap and Client Requests.csv '
                              'and that the output files will be written to')
-    choices = ['kccv', 'mccv']
-    parser.add_argument('-cvt', '--cv_technique', choices=choices, default='mccv',
+    parser.add_argument('-cvt', '--cv_technique', choices=cv_choices, default='auto',
                         help='Cross-Validation Technique to be used for generating evaluation samples')
 
     args = parser.parse_args()
     folder = args.folder
     cv_technique = str(args.cv_technique)
-    subfolder = cv_technique.upper()
-
-    log_file = os.path.join(folder, subfolder, 'p-value-calculation.log')
-    create_dir_recursively(log_file, is_file_path=True)
-    setup_logging(log_path=log_file)
+    result_dirs = ResultDirectories(folder=folder)
+    setup_logging(log_path=result_dirs.pvalue_cal_log_file)
     logger = logging.getLogger("P-Value Calculation")
     logger.info("Arguments {}".format(args))
 
@@ -59,20 +56,15 @@ if __name__== "__main__":
     report_string = ''
     for k in cols_pvals:
         vulnerable_classes[k] = []
-    df_file_path = os.path.join(folder, subfolder, 'Model Results.csv')
-    vulnerable_file = os.path.join(folder, subfolder, 'Vulnerable Classes.pickle')
-    report_file = os.path.join(folder, subfolder, 'Report.txt')
 
     logger.info("Starting the p-value calculation")
-    accuracies_file = os.path.join(folder, subfolder, 'Model Accuracies.pickle')
-    if os.path.exists(accuracies_file):
-        with open(accuracies_file, 'rb') as f:
+    if os.path.exists(result_dirs.accuracies_file):
+        with open(result_dirs.accuracies_file, 'rb') as f:
             metrics_dictionary = pickle.load(f)
         f.close()
     else:
         raise ValueError("The learning simulations are not done yet")
     cv_iterations_dict = metrics_dictionary[CV_ITERATIONS_LABEL]
-    df_file_path = os.path.join(folder, subfolder, 'Model Results.csv')
     final = []
     for missing_ccs_fin, (label, j) in product(csv_reader.ccs_fin_array, list(csv_reader.label_mapping.items())):
         if j == 0:
@@ -107,8 +99,8 @@ if __name__== "__main__":
                 n_training_folds = 1 - test_size
                 n_test_folds = test_size
             else:
-                raise ValueError('Cross-Validation technique is does not exist should be {} or {}'.format(choices[0],
-                                                                                                          choices[1]))
+                raise ValueError('Cross-Validation technique is does not exist should be {} or {}'.format(cv_choices[0],
+                                                                                                          cv_choices[1]))
             if np.any(np.isnan(accuracies)):
                 p_random_cttest, p_majority_cttest, p_prior_cttest, p_random_ttest, p_majority_ttest, p_prior_ttest, \
                 p_random_wilcox, p_majority_wilcox, p_prior_wilcox = 1, 1, 1, 1, 1, 1, 1, 1, 1
@@ -157,7 +149,7 @@ if __name__== "__main__":
     data_frame['rank'] = data_frame[MODEL].map(custom_dict)
     data_frame.sort_values(by=[DATASET, 'rank'], ascending=[True, True], inplace=True)
     del data_frame['rank']
-    data_frame.to_csv(df_file_path)
+    data_frame.to_csv(result_dirs.model_result_file_path)
     data_frame = pd.DataFrame(final, columns=columns)
     for pval_col in cols_pvals:
         data_frame[pval_col + '-rejected'] = False
@@ -192,15 +184,14 @@ if __name__== "__main__":
     data_frame['rank'] = data_frame['Model'].map(custom_dict)
     data_frame.sort_values(by=['Dataset', 'rank'], ascending=[True, True], inplace=True)
     del data_frame['rank']
-    data_frame.to_csv(df_file_path)
+    data_frame.to_csv(result_dirs.model_result_file_path)
 
-    df_result_file_path = os.path.join(folder, subfolder, 'final_results.csv')
     columns = [DATASET] + list(np.array([[c, c + '-count'] for c in cols_pvals]).flatten())
     data_frame = pd.DataFrame(final, columns=columns)
     data_frame.sort_values(by=[DATASET], ascending=[True], inplace=True)
-    data_frame.to_csv(df_result_file_path)
+    data_frame.to_csv(result_dirs.result_file_path)
 
-    with open(vulnerable_file, "wb") as class_file:
+    with open(result_dirs.vulnerable_file, "wb") as class_file:
         pickle.dump(vulnerable_classes, class_file)
 
     if report_string != '':
@@ -208,6 +199,6 @@ if __name__== "__main__":
     else:
         report_string = report_string + 'The Server is Not-Vulnerable to Side Channel attacks'
 
-    text_file = open(report_file, "w")
+    text_file = open(result_dirs.report_file, "w")
     n = text_file.write(report_string)
     text_file.close()

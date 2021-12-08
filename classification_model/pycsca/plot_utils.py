@@ -332,8 +332,8 @@ def learning_curve_for_label(estimators, X, y, vulnerable, fname, extension):
     plt.savefig(**fig_param)
 
 
-def plot_learning_curves_importances(models_folder, csv_reader, vulnerable_classes, lrcurve_folder, imp_folder,
-                                     extension='png', plotlr=False, logger=logging.getLogger('None')):
+def plot_learning_curves_importances(result_dirs, csv_reader, vulnerable_classes, extension='png', plotlr=False,
+                                     logger=logging.getLogger('None')):
     def get_estimators_data(models_folder, csv_reader, label_number, missing_ccs_fin):
         X, y = csv_reader.get_data_class_label(class_label=label_number, missing_ccs_fin=missing_ccs_fin)
         label = csv_reader.inverse_label_mapping[label_number]
@@ -350,31 +350,30 @@ def plot_learning_curves_importances(models_folder, csv_reader, vulnerable_class
                     model = pickle.load(f)
                     estimators.append(model)
         return label, estimators, X, y
-
     for missing_ccs_fin, (label, label_number) in product(csv_reader.ccs_fin_array,
                                                           list(csv_reader.label_mapping.items())):
-        label, estimators, X, y = get_estimators_data(models_folder, csv_reader, label_number=label_number,
+        label, estimators, X, y = get_estimators_data(result_dirs.models_folder, csv_reader, label_number=label_number,
                                                       missing_ccs_fin=missing_ccs_fin)
         vulnerable = label in vulnerable_classes
         if vulnerable and not missing_ccs_fin:
             name = RANDOM_FOREST_CLASSIFIER.lower() + '-' + '_'.join(label.lower().split(' ')) + '.pickle'
-            f = open(os.path.join(models_folder, name), 'rb')
+            f = open(os.path.join(result_dirs.models_folder, name), 'rb')
             model1 = pickle.load(f)
             model1.n_estimators = 500
             model1.fit(X, y)
             label1 = label + ' Missing-CCS-FIN'
 
             name = RANDOM_FOREST_CLASSIFIER.lower() + '-' + '_'.join(label1.lower().split(' ')) + '.pickle'
-            f = open(os.path.join(models_folder, name), 'rb')
+            f = open(os.path.join(result_dirs.models_folder, name), 'rb')
             model2 = pickle.load(f)
             model2.n_estimators = 500
             X1, y1 = csv_reader.get_data_class(class_label=label_number, missing_ccs_fin=True)
             model2.fit(X1, y1)
 
-            plot_importance(model1, model2, label, csv_reader.feature_names, imp_folder, extension=extension,
+            plot_importance(model1, model2, label, csv_reader.feature_names, result_dirs.importance_folder, extension=extension,
                             figsize=(7, 9), number=15)
         if len(estimators) != 0 and plotlr:
             label = label.replace(" ", "_")
-            fname = os.path.join(lrcurve_folder, "learning_curves_{}.{}".format(label, extension))
+            fname = os.path.join(result_dirs.learning_curves_folder, "learning_curves_{}.{}".format(label, extension))
             learning_curve_for_label(estimators, X, y, vulnerable, fname, extension)
         logger.error("###########################{}-{}###########################".format(vulnerable, label))

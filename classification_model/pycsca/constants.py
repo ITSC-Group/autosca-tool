@@ -19,8 +19,8 @@ CV_ITERATIONS_LABEL = "CV-ITERATIONS"
 WILCOXON_PVAL = 'wilcoxon-pval'
 FISHER_PVAL = 'fisher-pval'
 SCORE_KEY_FORMAT = '{}-scores-{}'
-SCORE_KEY_FORMAT_PERMUTATION = '{}-scores-{}-fold-{}-permutation-{}'
-SCORE_KEY_FORMAT_BERNOULLI = '{}-scores-{}-fold-{}-bernoulli-{}'
 
 LABEL_COL = 'label'
 MISSING_CCS_FIN = 'missing_ccs_fin'
+cv_choices = ['kfcv', 'mccv', 'auto']
+
