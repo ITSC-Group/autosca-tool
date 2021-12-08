@@ -32,7 +32,7 @@ def get_confidence(value):
 
 
 def update_report(report_string, rejected, p_values, label):
-    append_string = 'The server is Vulnerable to Class {} \n'.format(label)
+    append_string = 'The server is Vulnerable to Padding Manipulation {} \n'.format(label)
     report_string = report_string + append_string
     append_string = 'Highest p-value: {}, Lowest p-value: {}, Number of Algorithms: {} ' \
                     'Confidence: {} \n'.format(np.max(p_values), np.min(p_values), np.sum(rejected),
