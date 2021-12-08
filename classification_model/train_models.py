@@ -9,9 +9,10 @@ from itertools import product
 from sklearn.model_selection import StratifiedKFold, StratifiedShuffleSplit
 from sklearn.utils import check_random_state
 
+from classification_model.result_directories import ResultDirectories
 from pycsca.classification_test import optimize_search_cv
 from pycsca.classifiers import classifiers_space
-from pycsca.constants import *
+from pycsca.constants import METRICS, cv_choices, SCORE_KEY_FORMAT, MULTI_CLASS, BEST_PARAMETERS, CV_ITERATIONS_LABEL
 from pycsca.csv_reader import CSVReader
 from pycsca.utils import setup_logging, print_dictionary, create_dir_recursively
 from utils import cols_metrics, test_size
@@ -39,7 +40,6 @@ def str2bool(v):
 
 
 # Add a parameter of number jobs in start.sh with number of jobs
-
 if __name__ == "__main__":
     warnings.simplefilter("ignore")
     warnings.simplefilter('always', category=UserWarning)
@@ -52,8 +52,7 @@ if __name__ == "__main__":
                         help='Number of iteration for training and testing the models')
     parser.add_argument('-i', '--iterations', type=int, default=10,
                         help='Number of iteration for Hyper-parameter optimization')
-    choices = ['kccv', 'mccv']
-    parser.add_argument('-cvt', '--cv_technique', choices=choices, default='mccv',
+    parser.add_argument('-cvt', '--cv_technique', choices=cv_choices, default='auto',
                         help='Cross-Validation Technique to be used for generating evaluation samples')
     parser.add_argument('-nj', '--n_jobs', type=int, default=8, help='Number of jobs to be used for parallelism')
     parser.add_argument('-se', '--skipexisting', type=str2bool, nargs='?',
@@ -67,22 +66,18 @@ if __name__ == "__main__":
     folder = args.folder
     cv_technique = str(args.cv_technique)
     random_state = check_random_state(42)
-    subfolder = cv_technique.upper()
-    log_file = os.path.join(folder, subfolder, 'learning.log')
-    create_dir_recursively(log_file, is_file_path=True)
-    setup_logging(log_path=log_file)
+
+    result_files = ResultDirectories(folder=folder)
+    setup_logging(log_path=result_files.learning_log_file)
     logger = logging.getLogger("LearningExperiment")
     logger.info("Arguments {}".format(args))
     csv_reader = CSVReader(folder=folder, seed=42)
     csv_reader.plot_class_distribution()
     dataset = args.folder.split('/')[-1]
 
-    models_folder = os.path.join(folder, subfolder, 'Models')
-    create_dir_recursively(models_folder)
 
-    accuracies_file = os.path.join(folder, subfolder, 'Model Accuracies.pickle')
-    if os.path.exists(accuracies_file):
-        with open(accuracies_file, 'rb') as f:
+    if os.path.exists(result_files.accuracies_file):
+        with open(result_files.accuracies_file, 'rb') as f:
             metrics_dictionary = pickle.load(f)
         f.close()
     else:
@@ -92,10 +87,12 @@ if __name__ == "__main__":
         cv_iterator = StratifiedKFold(n_splits=cv_iterations, shuffle=True, random_state=random_state)
     elif cv_technique == 'mccv':
         cv_iterator = StratifiedShuffleSplit(n_splits=cv_iterations, test_size=test_size, random_state=random_state)
+    elif cv_technique == 'auto':
+        cv_iterator = StratifiedKFold(n_splits=cv_iterations, shuffle=True, random_state=random_state)
     else:
-        raise ValueError('Cross-Validation technique is does not exist should be {} or {}'.format(choices[0],
-                                                                                                  choices[1]))
+        raise ValueError('Cross-Validation technique is does not exist should be {} or {} or {}'.format(*cv_choices))
     logger.info('cv_iterator {}'.format(cv_iterator))
+
     cv_iterations_dict = {}
     for missing_ccs_fin, (label, j) in product(csv_reader.ccs_fin_array, list(csv_reader.label_mapping.items())):
         start_label = datetime.now()
@@ -110,14 +107,6 @@ if __name__ == "__main__":
             continue
         if missing_ccs_fin:
             label = label + ' Missing-CCS-FIN'
-
-        if y.shape[0] < 3 or len(np.unique(y)) == 1:
-            logger.info("Skipping the class label {}".format(label))
-            if len(np.unique(y)) == 1:
-                logger.info("Only one class instances")
-            if y.shape[0] < 3:
-                logger.info("Very less number of instances {}".format(y.shape[0]))
-            continue
         ones = int(np.count_nonzero(y) / 2)
         zeros = int((y.shape[0] - np.count_nonzero(y)) / 2)
         new_cv_iter = np.min([ones, zeros])
@@ -146,9 +135,8 @@ if __name__ == "__main__":
                 scores_m = optimize_search_cv(classifier, params, search_space, cv_iterator, hp_iterations, x, y,
                                               n_jobs=n_jobs, random_state=random_state)
                 metrics_dictionary[KEY] = scores_m
-
                 name = cls_name.lower() + '-' + '_'.join(label.lower().split(' ')) + '.pickle'
-                file_name = os.path.join(models_folder, name)
+                file_name = os.path.join(result_files.models_folder, name)
                 idx = np.argmin(np.array(scores_m[BEST_PARAMETERS])[:, 0])
                 best_params = scores_m[BEST_PARAMETERS][idx][1]
                 params_str = print_dictionary(best_params, sep='\t')
@@ -167,5 +155,5 @@ if __name__ == "__main__":
     logger.info("#######################################################################")
 
     metrics_dictionary[CV_ITERATIONS_LABEL] = cv_iterations_dict
-    with open(accuracies_file, 'wb') as file:
+    with open(result_files.accuracies_file, 'wb') as file:
         pickle.dump(metrics_dictionary, file)
