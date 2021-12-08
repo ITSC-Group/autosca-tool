@@ -12,10 +12,10 @@ from sklearn.utils import check_random_state
 from classification_model.result_directories import ResultDirectories
 from pycsca.classification_test import optimize_search_cv
 from pycsca.classifiers import classifiers_space
-from pycsca.constants import METRICS, cv_choices, SCORE_KEY_FORMAT, MULTI_CLASS, BEST_PARAMETERS, CV_ITERATIONS_LABEL
+from pycsca.constants import METRICS, cv_choices, SCORE_KEY_FORMAT, MULTI_CLASS, BEST_PARAMETERS, CV_ITERATIONS_LABEL, \
+    cols_metrics, CV_ITERATOR, test_size, N_SPLITS
 from pycsca.csv_reader import CSVReader
 from pycsca.utils import setup_logging, print_dictionary
-from utils import cols_metrics, test_size
 
 
 def print_accuracies(cls_name, label, scores):
@@ -85,20 +85,26 @@ if __name__ == "__main__":
     start = datetime.now()
     if cv_technique == 'kfcv':
         cv_iterator = StratifiedKFold(n_splits=cv_iterations, shuffle=True, random_state=random_state)
+        if csv_reader.minimum_instances < cv_iterations * 10:
+            raise ValueError('Number of instances per class should be greater than {}'.format(cv_iterations * 3))
     elif cv_technique == 'mccv':
         cv_iterator = StratifiedShuffleSplit(n_splits=cv_iterations, test_size=test_size, random_state=random_state)
+        if csv_reader.minimum_instances < cv_iterations * 3:
+            raise ValueError('Number of instances per class should be greater than {}'.format(cv_iterations * 3))
     elif cv_technique == 'auto':
-        if csv_reader.minimum_instances > cv_iterations * 3:
+        if csv_reader.minimum_instances > cv_iterations * 10:
             cv_iterator = StratifiedKFold(n_splits=cv_iterations, shuffle=True, random_state=random_state)
-        elif csv_reader.minimum_instances > cv_iterations * 2:
+        elif csv_reader.minimum_instances > cv_iterations * 3:
             cv_iterator = StratifiedShuffleSplit(n_splits=cv_iterations, test_size=test_size, random_state=random_state)
         else:
-            raise ValueError('Number of instances per class should be greater than {}'.format(cv_iterations * 2))
+            raise ValueError('Number of instances per class should be greater than {}'.format(cv_iterations * 3))
     else:
         raise ValueError('Cross-Validation technique is does not exist should be {} or {} or {}'.format(*cv_choices))
-    logger.info('cv_iterator {}'.format(cv_iterator))
+    logger.info('The selected Cross-Validation technique is {}'.format(cv_iterator))
 
     cv_iterations_dict = {}
+    cv_iterations_dict[CV_ITERATOR] = str(cv_iterator).split('(')[0]
+    cv_iterations_dict[N_SPLITS] = cv_iterations
     for missing_ccs_fin, (label, j) in product(csv_reader.ccs_fin_array, list(csv_reader.label_mapping.items())):
         start_label = datetime.now()
         dt_string = start_label.strftime("%d/%m/%Y %H:%M:%S")
@@ -142,13 +148,13 @@ if __name__ == "__main__":
                     pickle.dump(best_estimator, f)
         end_label = datetime.now()
         total = (end_label - start_label).total_seconds()
-        logger.info("Time taken for evaluation of labels {} is {} minutes ".format(label, total / 60))
+        logger.info("Time taken for evaluation of label {} is {} minutes ".format(label, total / 60))
         logger.info("#######################################################################")
     end = datetime.now()
     total = (end - start).total_seconds()
     logger.info("Time taken for finishing the learning task is {} seconds and {} hours".format(total, total / 3600))
     logger.info("#######################################################################")
-
+    print(cv_iterations_dict)
     metrics_dictionary[CV_ITERATIONS_LABEL] = cv_iterations_dict
     with open(result_files.accuracies_file, 'wb') as file:
         pickle.dump(metrics_dictionary, file)

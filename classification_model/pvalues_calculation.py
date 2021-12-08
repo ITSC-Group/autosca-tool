@@ -7,10 +7,8 @@ import pickle
 from itertools import product
 from scipy.stats import fisher_exact
 from statsmodels.stats.multitest import multipletests
-
 from classification_model.result_directories import ResultDirectories
 from pycsca import *
-from utils import test_size, cols_metrics, cols_pvals, columns
 
 
 def holm_bonferroni(data_frame, label, pval_col):
@@ -38,12 +36,9 @@ if __name__== "__main__":
     parser.add_argument('-f', '--folder', required=True,
                         help='Folder that contains the input files Packets.pcap and Client Requests.csv '
                              'and that the output files will be written to')
-    parser.add_argument('-cvt', '--cv_technique', choices=cv_choices, default='auto',
-                        help='Cross-Validation Technique to be used for generating evaluation samples')
 
     args = parser.parse_args()
     folder = args.folder
-    cv_technique = str(args.cv_technique)
     result_dirs = ResultDirectories(folder=folder)
     setup_logging(log_path=result_dirs.pvalue_cal_log_file)
     logger = logging.getLogger("P-Value Calculation")
@@ -92,10 +87,10 @@ if __name__== "__main__":
             accuracies = scores[ACCURACY]
             confusion_matrices = scores[CONFUSION_MATRICES]
             cm_single = scores[CONFUSION_MATRIX_SINGLE]
-            if cv_technique == 'kccv':
-                n_training_folds = cv_iterations_dict[label] - 1
+            if cv_iterations_dict[CV_ITERATOR] == 'StratifiedKFold':
+                n_training_folds = cv_iterations_dict[N_SPLITS] - 1
                 n_test_folds = 1
-            elif cv_technique == 'mccv':
+            elif cv_iterations_dict[CV_ITERATOR] == 'StratifiedShuffleSplit':
                 n_training_folds = 1 - test_size
                 n_test_folds = test_size
             else:
@@ -176,7 +171,7 @@ if __name__== "__main__":
             if np.any(reject):
                 vulnerable_classes[pval_col].append(label)
                 logger.info("Adding class {} for pval {}".format(label, pval_col))
-                if pval_col == CTTEST_PVAL + '-random':
+                if pval_col == P_VALUE_COLUMN:
                     report_string = update_report(report_string, reject, pvals_corrected, label)
         final.append(one_row)
 

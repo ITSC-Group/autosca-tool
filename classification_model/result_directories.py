@@ -12,11 +12,11 @@ class ResultDirectories():
         self.debug_label = debug_level
         self._create_directories_()
 
-    def _create_directories(self):
+    def _create_directories_(self):
         create_dir_recursively(os.path.join(self.folder, self.intermediate_folder), False)
         create_dir_recursively(os.path.join(self.folder, self.final_results_folder), False)
         create_dir_recursively(os.path.join(self.folder, self.debug_folder), False)
-        self.__create_intermediate_folders_()
+        self._create_intermediate_folders_()
         self._create_debug_folders_()
         self._create_final_folders_()
 
@@ -25,6 +25,7 @@ class ResultDirectories():
         self.vulnerable_file = os.path.join(self.folder, self.intermediate_folder, 'Vulnerable Classes.pickle')
         self.model_result_file_path = os.path.join(self.folder, self.intermediate_folder, 'Model Results.csv')
         self.models_folder = os.path.join(self.folder, self.intermediate_folder, 'Models')
+        create_dir_recursively(self.models_folder, False)
 
     def _create_debug_folders_(self):
         self.learning_log_file = os.path.join(self.folder, self.debug_folder, 'learning.log')
@@ -37,6 +38,9 @@ class ResultDirectories():
         self.learning_curves_folder = os.path.join(self.plots_folder, 'Learning Curves')
         self.result_file_path = os.path.join(self.folder, self.final_results_folder, 'Final Results.csv')
         self.report_file = os.path.join(self.folder, self.final_results_folder, 'Report.txt')
+        create_dir_recursively(self.plots_folder, False)
+        create_dir_recursively(self.learning_curves_folder, False)
+        create_dir_recursively(self.importance_folder, False)
 
     def remove_folders(self):
         if self.debug_label < 2:
