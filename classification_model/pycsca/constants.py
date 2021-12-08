@@ -23,8 +23,13 @@ SCORE_KEY_FORMAT = '{}-scores-{}'
 LABEL_COL = 'label'
 MISSING_CCS_FIN = 'missing_ccs_fin'
 cv_choices = ['kfcv', 'mccv', 'auto']
+debug_levels = {0: "Final", 1: "Intermediate", 2: "Debug"}
 CV_ITERATOR = "CV_ITERATOR"
 N_SPLITS = "N_SPLITS"
+DEBUG_LEVEL = "DEBUG_LEVEL"
+LOW = "LOW"
+MEDIUM = "MEDIUM"
+HIGH = "HIGH"
 cols_base = ['Dataset', 'Model']
 cols_metrics = [ACCURACY, '{}-std'.format(ACCURACY), F1SCORE, "{}-std".format(F1SCORE),
                 AUC_SCORE, "{}-std".format(AUC_SCORE), COHENKAPPA, "{}-std".format(COHENKAPPA), MCC,

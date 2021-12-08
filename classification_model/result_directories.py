@@ -8,8 +8,7 @@ class ResultDirectories():
         self.intermediate_folder = "Intermediate Results"
         self.final_results_folder = "Final Results"
         self.folder = folder
-        self.debug_levels = {0: "Final", 1: "Intermediate", 2: "Debug"}
-        self.debug_label = debug_level
+        self.debug_level = debug_level
         self._create_directories_()
 
     def _create_directories_(self):
@@ -25,6 +24,8 @@ class ResultDirectories():
         self.vulnerable_file = os.path.join(self.folder, self.intermediate_folder, 'Vulnerable Classes.pickle')
         self.model_result_file_path = os.path.join(self.folder, self.intermediate_folder, 'Model Results.csv')
         self.models_folder = os.path.join(self.folder, self.intermediate_folder, 'Models')
+        self.result_file_path = os.path.join(self.folder, self.intermediate_folder, 'Final Results.csv')
+        self.detailed_report_file = os.path.join(self.folder, self.intermediate_folder, 'Detailed Report.txt')
         create_dir_recursively(self.models_folder, False)
 
     def _create_debug_folders_(self):
@@ -36,7 +37,6 @@ class ResultDirectories():
         self.plots_folder = os.path.join(self.folder, self.final_results_folder, 'Plots')
         self.importance_folder = os.path.join(self.plots_folder, 'Feature Importance')
         self.learning_curves_folder = os.path.join(self.plots_folder, 'Learning Curves')
-        self.result_file_path = os.path.join(self.folder, self.final_results_folder, 'Final Results.csv')
         self.report_file = os.path.join(self.folder, self.final_results_folder, 'Report.txt')
         create_dir_recursively(self.plots_folder, False)
         create_dir_recursively(self.learning_curves_folder, False)

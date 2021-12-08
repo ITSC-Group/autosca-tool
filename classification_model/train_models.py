@@ -1,3 +1,5 @@
+import copy
+
 import argparse
 import logging
 import numpy as np
@@ -12,8 +14,7 @@ from sklearn.utils import check_random_state
 from classification_model.result_directories import ResultDirectories
 from pycsca.classification_test import optimize_search_cv
 from pycsca.classifiers import classifiers_space
-from pycsca.constants import METRICS, cv_choices, SCORE_KEY_FORMAT, MULTI_CLASS, BEST_PARAMETERS, CV_ITERATIONS_LABEL, \
-    cols_metrics, CV_ITERATOR, test_size, N_SPLITS
+from pycsca.constants import *
 from pycsca.csv_reader import CSVReader
 from pycsca.utils import setup_logging, print_dictionary
 
@@ -58,6 +59,8 @@ if __name__ == "__main__":
     parser.add_argument('-se', '--skipexisting', type=str2bool, nargs='?',
                         const=True, default=False,
                         help='The decision to skip the learning task for the current configuration')
+    parser.add_argument('-dl', '--debuglevel', choices=list(debug_levels.keys()), default=1,
+                        help='The decision to skip the learning task for the current configuration')
     args = parser.parse_args()
     cv_iterations = int(args.cv_iterations)
     hp_iterations = int(args.iterations)
@@ -65,17 +68,16 @@ if __name__ == "__main__":
     skip_existing = args.skipexisting
     folder = args.folder
     cv_technique = str(args.cv_technique)
+    debug_level = int(args.debuglevel)
     random_state = check_random_state(42)
 
-    result_files = ResultDirectories(folder=folder)
+    result_files = ResultDirectories(folder=folder, debug_level=debug_level)
     setup_logging(log_path=result_files.learning_log_file)
     logger = logging.getLogger("LearningExperiment")
     logger.info("Arguments {}".format(args))
     csv_reader = CSVReader(folder=folder, seed=42)
     csv_reader.plot_class_distribution()
     dataset = args.folder.split('/')[-1]
-
-
     if os.path.exists(result_files.accuracies_file):
         with open(result_files.accuracies_file, 'rb') as f:
             metrics_dictionary = pickle.load(f)
@@ -105,6 +107,7 @@ if __name__ == "__main__":
     cv_iterations_dict = {}
     cv_iterations_dict[CV_ITERATOR] = str(cv_iterator).split('(')[0]
     cv_iterations_dict[N_SPLITS] = cv_iterations
+    metrics_dictionary[DEBUG_LEVEL] = debug_level
     for missing_ccs_fin, (label, j) in product(csv_reader.ccs_fin_array, list(csv_reader.label_mapping.items())):
         start_label = datetime.now()
         dt_string = start_label.strftime("%d/%m/%Y %H:%M:%S")
@@ -154,7 +157,6 @@ if __name__ == "__main__":
     total = (end - start).total_seconds()
     logger.info("Time taken for finishing the learning task is {} seconds and {} hours".format(total, total / 3600))
     logger.info("#######################################################################")
-    print(cv_iterations_dict)
     metrics_dictionary[CV_ITERATIONS_LABEL] = cv_iterations_dict
     with open(result_files.accuracies_file, 'wb') as file:
         pickle.dump(metrics_dictionary, file)
