@@ -110,7 +110,6 @@ def bar_grid_for_dataset(df, metric, std, folder, figsize=(7, 4), extension='png
     plt.figure()
     axs = np.array(axs).flatten()
     ini = index[0]
-
     for ax, dataset in zip(axs, u_datasets):
         logger.debug("Plotting grid plot for dataset {}".format(dataset))
         accs = list(df[df['Dataset'] == dataset][metric].values)
@@ -122,7 +121,7 @@ def bar_grid_for_dataset(df, metric, std, folder, figsize=(7, 4), extension='png
 
         l = int(len(dataset.split(" ")) / 2) + 1
         dataset = '_'.join(dataset.split(" ")[0:l]) + '\n' + '_'.join(dataset.split(" ")[l:])
-        ax.set_title(dataset, fontsize=10)
+        ax.set_title(dataset, y=0.90, fontsize=10)
         ax.spines['right'].set_visible(False)
         ax.spines['top'].set_visible(False)
         ax.tick_params(labelsize=10)
@@ -130,6 +129,21 @@ def bar_grid_for_dataset(df, metric, std, folder, figsize=(7, 4), extension='png
         ax.set_xticklabels(ax.xaxis.get_majorticklabels(), rotation=45, ha='right')
         ax.set_ylim(0, end)
         ax.set_ylabel(metric.title(), fontsize=10)
+    for ax in axs[n_datasets:]:
+        accs = np.zeros_like(accs)
+        errors = np.zeros_like(errors)
+        ax.bar(x=index, height=accs, yerr=errors, width=bar_width, alpha=opacity, color=colors, tick_label=u_models)
+        ax.set_yticks(np.arange(0, end, step=0.1).round(1))
+        dataset = ""
+        ax.set_title(dataset, y=0.90, fontsize=10)
+        ax.spines['right'].set_visible(False)
+        ax.spines['top'].set_visible(False)
+        ax.tick_params(labelsize=10)
+        ax.tick_params(axis='x', which='major', labelsize=10)
+        ax.set_xticklabels(ax.xaxis.get_majorticklabels(), rotation=45, ha='right')
+        ax.set_ylim(0, end)
+        ax.set_ylabel(metric.title(), fontsize=10)
+
     fname = os.path.join(folder, "plot_{}.{}".format('grid', extension))
     fig_param['fname'] = fname
     fig.savefig(**fig_param)
@@ -193,7 +207,7 @@ def bar_plot_for_problem(df, metric, params, std, folder, figsize=(14, 6), exten
     plt.savefig(**fig_param)
 
 
-def plot_importance(models, feature_names, fname, extension, figsize=(2, 4), number=15):
+def plot_importance(models, feature_names, fname, extension, figsize=(3, 4), number=15):
     fig_param['format'] = extension
     n_models = len(models)
     if n_models < 8:

@@ -34,6 +34,7 @@ if __name__ == "__main__":
         f.close()
     else:
         raise ValueError("The learning simulations are not done yet")
+    result_dirs.debug_level = metrics_dictionary[DEBUG_LEVEL]
     cv_iterations_dict = metrics_dictionary[CV_ITERATIONS_LABEL]
     setup_logging(log_path=result_dirs.plotting_log_file)
     logger = logging.getLogger("Plotting")
@@ -68,3 +69,4 @@ if __name__ == "__main__":
                                          result_dirs.plots_folder, figsize=sfigsize, extension=extension)
 
     logger.info("Finished Plotting")
+    result_dirs.remove_folders()

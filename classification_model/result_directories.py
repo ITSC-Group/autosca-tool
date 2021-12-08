@@ -1,20 +1,21 @@
+import logging
+
 import os
 from pycsca.utils import create_dir_recursively
+import shutil
 
 
 class ResultDirectories():
     def __init__(self, folder: str, debug_level=0):
-        self.debug_folder = "Debug Results"
-        self.intermediate_folder = "Intermediate Results"
-        self.final_results_folder = "Final Results"
         self.folder = folder
+        self.debug_folder = os.path.join(self.folder, "Debug Results")
+        self.intermediate_folder = os.path.join(self.folder, "Intermediate Results")
+        self.final_results_folder = os.path.join(self.folder, "Final Results")
         self.debug_level = debug_level
         self._create_directories_()
+        self.logger = logging.getLogger(ResultDirectories.__name__)
 
     def _create_directories_(self):
-        create_dir_recursively(os.path.join(self.folder, self.intermediate_folder), False)
-        create_dir_recursively(os.path.join(self.folder, self.final_results_folder), False)
-        create_dir_recursively(os.path.join(self.folder, self.debug_folder), False)
         self._create_intermediate_folders_()
         self._create_debug_folders_()
         self._create_final_folders_()
@@ -32,6 +33,8 @@ class ResultDirectories():
         self.learning_log_file = os.path.join(self.folder, self.debug_folder, 'learning.log')
         self.plotting_log_file = os.path.join(self.folder, self.debug_folder, 'plotting.log')
         self.pvalue_cal_log_file = os.path.join(self.folder, self.debug_folder, 'p-value-calculation.log')
+        create_dir_recursively(self.learning_log_file, True)
+
 
     def _create_final_folders_(self):
         self.plots_folder = os.path.join(self.folder, self.final_results_folder, 'Plots')
@@ -43,8 +46,7 @@ class ResultDirectories():
         create_dir_recursively(self.importance_folder, False)
 
     def remove_folders(self):
-        if self.debug_label < 2:
-            os.rmdir(self.debug_folder)
-        if self.debug_label == 0:
-            os.rmdir(self.intermediate_folder)
-
+        if self.debug_level < 2:
+            shutil.rmtree(self.debug_folder)
+        if self.debug_level == 0:
+            shutil.rmtree(self.intermediate_folder)
