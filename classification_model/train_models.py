@@ -14,7 +14,7 @@ from pycsca.classification_test import optimize_search_cv
 from pycsca.classifiers import classifiers_space
 from pycsca.constants import METRICS, cv_choices, SCORE_KEY_FORMAT, MULTI_CLASS, BEST_PARAMETERS, CV_ITERATIONS_LABEL
 from pycsca.csv_reader import CSVReader
-from pycsca.utils import setup_logging, print_dictionary, create_dir_recursively
+from pycsca.utils import setup_logging, print_dictionary
 from utils import cols_metrics, test_size
 
 
@@ -83,12 +83,17 @@ if __name__ == "__main__":
     else:
         metrics_dictionary = dict()
     start = datetime.now()
-    if cv_technique == 'kccv':
+    if cv_technique == 'kfcv':
         cv_iterator = StratifiedKFold(n_splits=cv_iterations, shuffle=True, random_state=random_state)
     elif cv_technique == 'mccv':
         cv_iterator = StratifiedShuffleSplit(n_splits=cv_iterations, test_size=test_size, random_state=random_state)
     elif cv_technique == 'auto':
-        cv_iterator = StratifiedKFold(n_splits=cv_iterations, shuffle=True, random_state=random_state)
+        if csv_reader.minimum_instances > cv_iterations * 3:
+            cv_iterator = StratifiedKFold(n_splits=cv_iterations, shuffle=True, random_state=random_state)
+        elif csv_reader.minimum_instances > cv_iterations * 2:
+            cv_iterator = StratifiedShuffleSplit(n_splits=cv_iterations, test_size=test_size, random_state=random_state)
+        else:
+            raise ValueError('Number of instances per class should be greater than {}'.format(cv_iterations * 2))
     else:
         raise ValueError('Cross-Validation technique is does not exist should be {} or {} or {}'.format(*cv_choices))
     logger.info('cv_iterator {}'.format(cv_iterator))
@@ -107,17 +112,7 @@ if __name__ == "__main__":
             continue
         if missing_ccs_fin:
             label = label + ' Missing-CCS-FIN'
-        ones = int(np.count_nonzero(y) / 2)
-        zeros = int((y.shape[0] - np.count_nonzero(y)) / 2)
-        new_cv_iter = np.min([ones, zeros])
-        logger.info("Ones {} Zeros {}".format(ones*2, zeros*2))
-        logger.info("New cv {} verssu from {}".format(label, new_cv_iter, [ones * 2, zeros * 2]))
-        if new_cv_iter < cv_iterations and cv_technique == 'kccv':
-            logger.info("For label {} New cv {} from {}".format(label, new_cv_iter, [ones * 2, zeros * 2]))
-            cv_iterator = StratifiedKFold(n_splits=new_cv_iter, shuffle=True, random_state=random_state)
-            cv_iterations_dict[label] = new_cv_iter
-        else:
-            cv_iterations_dict[label] = cv_iterations
+
         for classifier, params, search_space in classifiers_space:
             logger.info("#############################################################################")
             logger.info("Classifier {}, running for class {}".format(classifier.__name__, label))

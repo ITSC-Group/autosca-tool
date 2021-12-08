@@ -5,6 +5,7 @@ from abc import ABCMeta
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
+import numpy as np
 from sklearn.preprocessing import LabelEncoder
 
 from .constants import LABEL_COL, MISSING_CCS_FIN
@@ -86,6 +87,7 @@ class CSVReader(metaclass=ABCMeta):
             lambda row: div(row, vals[True]) if str2bool(row.missing_ccs_fin) else div(row, vals[False]), axis=1)
         fname = os.path.join(self.dataset_folder, "label_frequency.csv")
         df.to_csv(fname)
+        self.minimum_instances = np.min(df['Frequency'].values)
 
     def plot_class_distribution(self):
         fig_param = {'facecolor': 'w', 'edgecolor': 'w', 'transparent': False, 'dpi': 800, 'bbox_inches': 'tight',
