@@ -62,11 +62,10 @@ if __name__ == "__main__":
     vulnerable_classes = dict()
     report_string = ''
     short_report_string = ''
-    confidence_in_vulnerability = []
+    confidence_in_vulnerability = dict()
     TOTAL_ALGORITHMS = len(custom_dict) - 3
     for k in cols_pvals:
         vulnerable_classes[k] = []
-
     logger.info("Starting the p-value calculation")
     if os.path.exists(result_dirs.accuracies_file):
         with open(result_dirs.accuracies_file, 'rb') as f:
@@ -189,9 +188,8 @@ if __name__ == "__main__":
                 logger.info("Adding class {} for pval {}".format(label, pval_col))
                 if pval_col == P_VALUE_COLUMN:
                     report_string = update_report(report_string, rejected, pvals_corrected, label)
-                    confidence_in_vulnerability.append((label, np.sum(rejected)))
+                    confidence_in_vulnerability[label] = np.sum(rejected)
         final.append(one_row)
-    confidence_in_vulnerability = np.array(confidence_in_vulnerability)
     logger.info(print_dictionary(vulnerable_classes))
     data_frame['rank'] = data_frame['Model'].map(custom_dict)
     data_frame.sort_values(by=['Dataset', 'rank'], ascending=[True, True], inplace=True)
@@ -207,10 +205,12 @@ if __name__ == "__main__":
         pickle.dump(vulnerable_classes, class_file)
 
     if report_string != '':
-        short_report_string = 'The Server is Vulnerable to Side Channel attacks \n'
+        maxi = np.max(list(confidence_in_vulnerability.values()))
+        short_report_string = 'The Server is Vulnerable to Side Channel attacks with {} confidence \n'.format(
+            get_confidence(maxi))
         report_string = short_report_string + report_string
         short_report_string = short_report_string + "\nPadding Manipulation: Vulnerability Confidence"
-        for k, v in confidence_in_vulnerability:
+        for k, v in confidence_in_vulnerability.items():
             short_report_string = short_report_string + "\n{}: {}".format(k, get_confidence(v))
     else:
         short_report_string = 'The Server is Not-Vulnerable to Side Channel attacks \n'
