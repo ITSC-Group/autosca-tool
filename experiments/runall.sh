@@ -57,5 +57,5 @@ REPETITIONS=2000000
 ./start.sh --name openssl-0_9_7a-server --tag "openssl097a-twoclass" --docker --alltests --threads $THREADS --tlsattacker --port 44601 --datasetfolder $DATASETFOLDER --docker --alltests --threads $THREADSarguments "-v cert-data:/cert/:ro,nocopy" --clientarguments "--repetitions $REPETITIONS --noskip --twoclass" --serverarguments "-key /cert/rsa2048key.pem -cert /cert/rsa2048cert.pem" &
 ./start.sh --name openssl-0_9_7b-server --tag "openssl097b-twoclass" --docker --alltests --threads $THREADS --tlsattacker --port 44602 --datasetfolder $DATASETFOLDER --docker --alltests --threads $THREADSarguments "-v cert-data:/cert/:ro,nocopy" --clientarguments "--repetitions $REPETITIONS --noskip --twoclass" --serverarguments "-key /cert/rsa2048key.pem -cert /cert/rsa2048cert.pem" &
 
-./run_with_docker_server.sh --name apollolv/damnvulnerableopenssl-server --port 44701 --datasetfolder "/home/datasets" --clientarguments "--repetitions 20 --skip --noskip"
+./run_with_docker_server.sh --name apollolv/damnvulnerableopenssl-server --port 44701 --datasetfolder "/home/datasets" --clientarguments "--repetitions 200 --noskip"
 wait
