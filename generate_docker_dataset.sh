@@ -15,14 +15,14 @@ set -e
 
 usage()
 {
-    echo 'usage example: ./start.sh --tlsattacker --container apollolv/damnvulnerableopenssl-server --folder /home/datasets/2021-12-20-apollolvdamnvulnerableopenssl-server --clientarguments "--repetitions 200 --noskip"'
+    echo 'usage example: ./start.sh --tlsattacker --image apollolv/damnvulnerableopenssl-server --folder /home/datasets/2021-12-20-apollolvdamnvulnerableopenssl-server --clientarguments "--repetitions 200 --noskip"'
 }
 
 ALL_PARAMETERS=$*
 
 while [ "$1" != "" ]; do
     case $1 in
-        --container )           shift
+        --image )               shift
                                 SUT_NAME="$1"
                                 ;;
         --tlsattacker )         USE_TLS_ATTACKER=1
