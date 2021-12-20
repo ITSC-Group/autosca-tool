@@ -3,8 +3,10 @@
 FROM python:3-alpine
 ADD . /autosca-tool
 WORKDIR /autosca-tool
+RUN set -x && apk update
 RUN apk add --no-cache bash
-RUN python -m pip install --upgrade pip
-RUN pip install pipenv
+RUN python3 -m pip install --upgrade pip
+RUN pip3 install --upgrade pip setuptools
+RUN pip3 install pipenv
 RUN pipenv install --system --deploy --ignore-pipfile
 ENTRYPOINT ["bash", "/autosca-tool/analyze_dataset.sh"]
