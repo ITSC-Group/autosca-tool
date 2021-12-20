@@ -3,6 +3,7 @@
 FROM python:3
 COPY requirements.txt docker_containers/install_packages.sh feature_extraction classification_model analyze_dataset.sh /autosca-tool/
 WORKDIR /autosca-tool
+RUN ["chmod", "+x", "install_packages.sh"]
 RUN ./install_packages.sh
 # pipenv lock --keep-outdated --requirements > requirements.txt
 RUN pip install -r requirements.txt
