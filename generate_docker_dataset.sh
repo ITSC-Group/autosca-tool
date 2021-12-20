@@ -76,6 +76,7 @@ echo "on branch $(git rev-parse --abbrev-ref HEAD)" >> "$CONFIG"
 echo "" >> "$CONFIG"
 echo "# Dataset generation" >> "$CONFIG"
 
+SANITIZED_SUT_NAME=$(echo $SUT_NAME | tr -dc '[:alnum:]._-')
 echo "Starting system under test (SUT) docker image $SUT_NAME"
 if [ "$(docker ps -aq -f name=$SANITIZED_SUT_NAME)" ]; then
     echo "Cleaning up a container from a previous run"
