@@ -6,5 +6,6 @@ WORKDIR /autosca-tool
 RUN set -x && apk update
 RUN apk add --no-cache bash
 RUN python3 -m pip install --upgrade pip setuptools
+# pipenv lock --keep-outdated --requirements > requirements.txt
 RUN pip install -r requirements.txt
 ENTRYPOINT ["bash", "/autosca-tool/analyze_dataset.sh"]
