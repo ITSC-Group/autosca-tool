@@ -30,7 +30,6 @@ while [ "$1" != "" ]; do
 done
 
 echo "Analyzing dataset folder $FOLDER"
-cd "$FOLDER" || exit
 
 CONFIG="$FOLDER/config.md"
 
