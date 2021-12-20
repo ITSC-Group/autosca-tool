@@ -3,7 +3,7 @@
 FROM python:3-alpine
 COPY requirements.txt feature_extraction classification_model analyze_dataset.sh /autosca-tool/
 WORKDIR /autosca-tool
-RUN echo "http://dl-8.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories
+RUN echo "http://dl-cdn.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories
 # Add HDF5 support
 RUN apk add --no-cache --allow-untrusted --repository http://dl-3.alpinelinux.org/alpine/edge/testing hdf5 hdf5-dev
 RUN apk --no-cache --update-cache add gcc gfortran python python-dev py-pip build-base wget freetype-dev libpng-dev openblas-dev
