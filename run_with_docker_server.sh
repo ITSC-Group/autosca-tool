@@ -2,7 +2,7 @@
 TOOL_FOLDER="$(pwd)"
 SUT_HOST="localhost"
 CAPTURE_HOST="localhost"
-SUT_PORT=4433
+SUT_PORT=443
 SUT_NAME="apollolv/damnvulnerableopenssl-server"
 TAG=""
 USE_TLS_ATTACKER=1
@@ -39,8 +39,6 @@ while [ "$1" != "" ]; do
                                 ;;
         --datasetfolder )       shift
                                 DATASET_FOLDER=$1
-                                ;;
-        --alltests )            ALL_TESTS=1
                                 ;;
         --clientarguments )     shift
                                 CLIENT_ARGUMENTS=$1
@@ -145,14 +143,12 @@ fi
 
 if [ "$USE_TLS_ATTACKER" = "0" ]; then
     echo "Starting TLS client using the achelos TLS Test Tool"
-    cd "$TOOL_FOLDER/tls_test_tool_client" || exit
     # shellcheck disable=SC2086
-    CLIENT_COMMAND="pipenv run python3 client.py --folder=\"$FOLDER\" --name=$SANITIZED_SUT_NAME $CLIENT_ARGUMENTS 2>&1 | tee \"$FOLDER/TLS Test Tool Client.log\""
+    CLIENT_COMMAND="pipenv run python3 tls_test_tool_client/client.py --folder=\"$FOLDER\" --name=$SANITIZED_SUT_NAME $CLIENT_ARGUMENTS 2>&1 | tee \"$FOLDER/TLS Test Tool Client.log\""
 else
     echo "Starting TLS client using the RUB TLS Attacker"
-    cd "$TOOL_FOLDER/tls_attacker_client" || exit
     # shellcheck disable=SC2086
-    CLIENT_COMMAND="java -jar apps/ML-BleichenbacherGenerator.jar -connect $SUT_HOST:$SUT_PORT --folder \"$FOLDER\" $CLIENT_ARGUMENTS 2>&1 | tee \"$FOLDER/TLS Attacker Client.log\""
+    CLIENT_COMMAND="java -jar tls_attacker_client/apps/ML-BleichenbacherGenerator.jar -connect $SUT_HOST:$SUT_PORT --folder \"$FOLDER\" $CLIENT_ARGUMENTS 2>&1 | tee \"$FOLDER/TLS Attacker Client.log\""
 fi
 echo "## Client Command" >> "$CONFIG"
 echo "$CLIENT_COMMAND" >> "$CONFIG"
@@ -179,8 +175,7 @@ echo "Starting feature extraction"
 echo " " >> "$CONFIG"
 echo "# Feature Extraction" >> "$CONFIG"
 START_TIME=$(date +%s)
-cd "$TOOL_FOLDER/feature_extraction" || exit
-pipenv run python3 extract.py --folder="$FOLDER" 2>&1 | tee "$FOLDER/Feature Extraction.log"
+pipenv run python3 feature_extraction/extract.py --folder="$FOLDER" 2>&1 | tee "$FOLDER/Feature Extraction.log"
 END_TIME=$(date +%s)
 DURATION="$(($END_TIME-$START_TIME))"
 echo "Finished feature extraction, execution took $DURATION seconds"
@@ -188,7 +183,6 @@ echo "## Execution Time" >> "$CONFIG"
 echo "$DURATION seconds" >> "$CONFIG"
 
 echo "Starting $CROSSVALIDATION_TECHNIQUE classification model training"
-cd "$TOOL_FOLDER/classification_model" || exit
 echo " " >> "$CONFIG"
 echo "# Machine Learning" >> "$CONFIG"
 echo "## Parameters" >> "$CONFIG"
@@ -197,7 +191,7 @@ echo "Doing $CROSSVALIDATION_ITERATIONS crossvalidation iterations" >> "$CONFIG"
 echo "Doing $HYPERPARAMETER_ITERATIONS hyperparameter optimization iterations" >> "$CONFIG"
 
 START_TIME=$(date +%s)
-pipenv run python3 train_models.py --folder="$FOLDER" --cv_technique=$CROSSVALIDATION_TECHNIQUE --cv_iterations=$CROSSVALIDATION_ITERATIONS --iterations=$HYPERPARAMETER_ITERATIONS --n_jobs=$PARALLEL_THREADS 2>&1 | tee "$FOLDER/Classification Model Training $1.log"
+pipenv run python3 classification_model/train_models.py --folder="$FOLDER" --cv_technique=$CROSSVALIDATION_TECHNIQUE --cv_iterations=$CROSSVALIDATION_ITERATIONS --iterations=$HYPERPARAMETER_ITERATIONS --n_jobs=$PARALLEL_THREADS 2>&1 | tee "$FOLDER/Classification Model Training $1.log"
 END_TIME=$(date +%s)
 DURATION="$(($END_TIME-$START_TIME))"
 echo "Finished $CROSSVALIDATION_TECHNIQUE classification model training, execution took $DURATION seconds"
@@ -205,10 +199,10 @@ echo "## Execution Time" >> "$CONFIG"
 echo "$DURATION seconds" >> "$CONFIG"
 
 echo "Generating report"
-pipenv run python3 pvalues_calculation.py --folder="$FOLDER" --cv_technique=$CROSSVALIDATION_TECHNIQUE 2>&1 | tee "$FOLDER/Report Generation $1.log"
+pipenv run python3 classification_model/pvalues_calculation.py --folder="$FOLDER" --cv_technique=$CROSSVALIDATION_TECHNIQUE 2>&1 | tee "$FOLDER/Report Generation $1.log"
 
 echo "Plotting the machine learning results"
-pipenv run python3 plot_results.py --folder="$FOLDER" --cv_technique=$CROSSVALIDATION_TECHNIQUE --cv_iterations=$CROSSVALIDATION_ITERATIONS 2>&1 | tee "$FOLDER/Classification Model Plotting $1.log"
+pipenv run python3 classification_model/plot_results.py --folder="$FOLDER" --cv_technique=$CROSSVALIDATION_TECHNIQUE --cv_iterations=$CROSSVALIDATION_ITERATIONS 2>&1 | tee "$FOLDER/Classification Model Plotting $1.log"
 echo "Finished plotting"
 echo " " >> "$CONFIG"
 
