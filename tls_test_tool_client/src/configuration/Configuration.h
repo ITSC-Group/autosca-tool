@@ -203,11 +203,11 @@ public:
 		tlsServerSimulation = newServerSimulation;
 	}
 
-    useconds_t getServerSimulationDelay() const {
+    unsigned int getServerSimulationDelay() const {
         return tlsServerSimulationDelay;
     }
 
-    void setServerSimulationDelay(const useconds_t newServerSimulationDelay) {
+    void setServerSimulationDelay(const unsigned int newServerSimulationDelay) {
         tlsServerSimulationDelay = newServerSimulationDelay;
     }
 
@@ -226,7 +226,7 @@ private:
 	std::vector<std::pair<uint8_t, uint8_t>> tlsCipherSuites;
 	std::string tlsSecretFile;
 	uint16_t tlsServerSimulation;
-    useconds_t tlsServerSimulationDelay;
+    unsigned int tlsServerSimulationDelay;
 	std::vector<std::unique_ptr<Manipulation>> manipulations;
 };
 }

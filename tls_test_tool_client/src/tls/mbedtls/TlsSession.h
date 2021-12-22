@@ -200,7 +200,7 @@ public:
      * Set the delay of the server to be simulated in microseconds
      * @param delayInMicroseconds The delay of the simulated server in microseconds.
      */
-    virtual void setServerSimulationDelay(const useconds_t delayInMicroseconds) override;
+    virtual void setServerSimulationDelay(const unsigned int delayInMicroseconds) override;
 
 private:
 	class Data;

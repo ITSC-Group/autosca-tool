@@ -13,7 +13,7 @@
      unsigned int overwrite_pms_random_byte : 1; /*!< overwrite the given PreMasterSecret.random byte with zero? */
      uint16_t pms_random_byte_index; /*!< indicate which byte of the random will be set to zero */
 +    uint16_t server_simulation_id; /*!< indicate if and which server will be simulated */
-+    useconds_t server_simulation_delay; /*!< indicate the amount of delay to simulate in microseconds */
++    unsigned int server_simulation_delay; /*!< indicate the amount of delay to simulate in microseconds */
  };
  
  struct mbedtls_ssl_context
