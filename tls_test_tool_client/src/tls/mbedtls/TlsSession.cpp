@@ -655,7 +655,7 @@ void TlsSession::setServerSimulation(uint16_t id) {
 	}
 }
 
-void TlsSession::setServerSimulationDelay(const useconds_t delayInMicrosecond) {
+void TlsSession::setServerSimulationDelay(const unsigned int delayInMicrosecond) {
     impl->conf.server_simulation_delay = delayInMicrosecond;
     log(__FILE__, __LINE__, "Using server simulation delay of " + std::to_string(delayInMicrosecond) + " microseconds.");
 }
