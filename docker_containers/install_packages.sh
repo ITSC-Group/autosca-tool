@@ -17,8 +17,8 @@ apt-get update
 apt-get -y upgrade
 
 # Install a new package, without unnecessary recommended packages:
-apt-get -y install --no-install-recommends build-essential gfortran python3-dev libatlas3-base libopenblas-base
-
+# apt-get -y install --no-install-recommends build-essential gfortran python3-dev libatlas3-base libopenblas-base
+apt-get -y install --no-install-recommends tshark libxml2-dev libxslt-dev
 # https://docs.scipy.org/doc/scipy/reference/building/linux.html#debian-ubuntu
 # update-alternatives --set libblas.so.3 /usr/lib/openblas-base/libopenblas.so.0
 
