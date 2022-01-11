@@ -9,6 +9,7 @@ COPY requirements.txt feature_extraction classification_model analyze_dataset.sh
 RUN pip install pipenv
 # pipenv lock --keep-outdated --requirements > requirements.txt
 RUN pip install -r requirements.txt
-
+# Run pipenv once so that the virtual environment is created
+RUN pipenv run python3 --version
 
 ENTRYPOINT ["bash", "/autosca-tool/analyze_dataset.sh"]
