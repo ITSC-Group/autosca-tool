@@ -8,7 +8,7 @@ RUN ./install_packages.sh
 RUN pip install pipenv
 COPY requirements.txt /autosca-tool/
 # pipenv lock --keep-outdated --requirements > requirements.txt
-RUN pip install -r requirements.txt
+RUN pipenv install -r requirements.txt
 # Run pipenv once so that the virtual environment is created
 RUN pipenv run python3 --version
 # Add the actual autosca-tool source code (https://stackoverflow.com/q/26504846/4091513)
