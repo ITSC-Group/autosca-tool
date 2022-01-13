@@ -91,26 +91,45 @@ def init_plots(df, extension, metric, figsize):
     return bar_width, df, fig_param, index, opacity, u_datasets, u_models, end
 
 
-def bar_grid_for_dataset(df, metric, std, folder, figsize=(7, 4), extension='png'):
-    bar_width, df, fig_param, index, opacity, u_datasets, u_models, end = init_plots(df, extension, figsize, metric)
-    n_datasets = len(u_datasets)
-    if n_datasets < 8:
-        c = 2
-    elif n_datasets < 16:
-        c = 3
-    elif n_datasets < 25:
-        c = 4
+def format_name(name):
+    if len(name) < 15:
+        print(name)
+        return name
+    elif '(' in name:
+        l = name.index('(')
+        name = ' '.join(name[0:l].split(" ")) + '\n' + ' '.join(name[l:].split(" ")) + '\n'
     else:
-        c = 5
-    r = int(np.ceil(n_datasets / c))
-    figsize = (figsize[0] * r, figsize[1] * c)
+        l = int(len(name.split(" ")) / 2) + 1
+        name = ' '.join(name.split(" ")[0:l]) + '\n' + ' '.join(name.split(" ")[l:]) + '\n'
+    name = name.replace("_", " ")
+    return name
+
+
+def bar_grid_for_dataset(df, metric, std, folder, figsize=(4, 4), extension='png'):
+    bar_width, df, fig_param, index, opacity, u_datasets, u_models, end = init_plots(df, extension, figsize, metric)
+    #u_datasets = u_datasets + u_datasets
+    #import random
+    #u_datasets = random.sample(u_datasets, n_d)
+    n_datasets = len(u_datasets)
+    n_d = n_datasets
+    if n_datasets <= 12:
+        c = 3
+        r = 4
+    elif n_datasets <= 16:
+        c = 4
+        r = 4
+    elif n_datasets <= 20:
+        c = 4
+        r = 5
+    figsize = (4.3 * c, 3.5 * r)
     logger.info('Datasets {}, figsize {}, rows {}, cols {}'.format(n_datasets, figsize, r, c))
     fig, axs = plt.subplots(nrows=r, ncols=c, sharex=True, sharey=True, figsize=figsize, frameon=True, edgecolor='k',
                             facecolor='white')
     plt.figure()
     axs = np.array(axs).flatten()
     ini = index[0]
-    for ax, dataset in zip(axs, u_datasets):
+    i = 0
+    for ax, dataset in zip(axs[:n_datasets], u_datasets):
         logger.debug("Plotting grid plot for dataset {}".format(dataset))
         accs = list(df[df['Dataset'] == dataset][metric].values)
         errors = list(df[df['Dataset'] == dataset][metric + '-std'].values / std)
@@ -121,34 +140,22 @@ def bar_grid_for_dataset(df, metric, std, folder, figsize=(7, 4), extension='png
 
         l = int(len(dataset.split(" ")) / 2) + 1
         dataset = '_'.join(dataset.split(" ")[0:l]) + '\n' + '_'.join(dataset.split(" ")[l:])
-        ax.set_title(dataset, y=0.90, fontsize=10)
+        ax.set_title(dataset, y=0.93, fontsize=10)
         ax.spines['right'].set_visible(False)
         ax.spines['top'].set_visible(False)
         ax.tick_params(labelsize=10)
         ax.tick_params(axis='x', which='major', labelsize=10)
         ax.set_xticklabels(ax.xaxis.get_majorticklabels(), rotation=45, ha='right')
         ax.set_ylim(0, end)
-        ax.set_ylabel(metric.title(), fontsize=10)
+        if i % c == 0:
+            ax.set_ylabel(metric.title(), fontsize=10)
+        i = i + 1
     for ax in axs[n_datasets:]:
-        accs = np.zeros_like(accs)
-        errors = np.zeros_like(errors)
-        ax.bar(x=index, height=accs, yerr=errors, width=bar_width, alpha=opacity, color=colors, tick_label=u_models)
-        ax.set_yticks(np.arange(0, end, step=0.1).round(1))
-        dataset = ""
-        ax.set_title(dataset, y=0.90, fontsize=10)
-        ax.spines['right'].set_visible(False)
-        ax.spines['top'].set_visible(False)
-        ax.tick_params(labelsize=10)
-        ax.tick_params(axis='x', which='major', labelsize=10)
-        ax.set_xticklabels(ax.xaxis.get_majorticklabels(), rotation=45, ha='right')
-        ax.set_ylim(0, end)
-        ax.set_ylabel(metric.title(), fontsize=10)
-
-    fname = os.path.join(folder, "plot_{}.{}".format('grid', extension))
+        ax.set_axis_off()
+    fname = os.path.join(folder, "plot_grid_{}.{}".format(n_d, extension))
     fig_param['fname'] = fname
     fig.savefig(**fig_param)
     plt.show()
-
 
 def classwise_barplot_for_dataset(df, metric, std, folder, figsize=(3, 4), extension='png'):
     bar_width, df, fig_param, index, opacity, u_datasets, u_models, end = init_plots(df, extension, figsize, metric)
@@ -207,21 +214,24 @@ def bar_plot_for_problem(df, metric, params, std, folder, figsize=(14, 6), exten
     plt.savefig(**fig_param)
 
 
-def plot_importance(models, feature_names, fname, extension, figsize=(3, 4), number=15):
+def plot_importance(models, feature_names, fname, extension, number=15):
     fig_param['format'] = extension
     n_models = len(models)
-    if n_models < 8:
-        c = 2
-    elif n_models < 16:
+    if n_models <= 12:
         c = 3
-    elif n_models < 25:
+        r = 4
+        figsize = (12, 12)
+    elif n_models <= 16:
         c = 4
-    else:
-        c = 5
-    r = int(np.ceil(n_models / c))
-    figsize = (figsize[0] * r, figsize[1] * c)
+        r = 4
+        figsize = (16, 12)
+    elif n_models <= 20:
+        c = 4
+        r = 5
+        figsize = (16, 16)
+    figsize = (3.6 * c, 3.5 * r)
     logger.info('Datasets {}, figsize {}, rows {}, cols {}'.format(n_models, figsize, r, c))
-    fig, axs = plt.subplots(nrows=r, ncols=c, sharex=True, sharey=True, figsize=figsize, frameon=True, edgecolor='k',
+    fig, axs = plt.subplots(nrows=r, ncols=c, sharex=True, figsize=figsize, frameon=True, edgecolor='k',
                             facecolor='white')
     axs = np.array(axs).flatten()
 
@@ -245,23 +255,28 @@ def plot_importance(models, feature_names, fname, extension, figsize=(3, 4), num
         std = std[indices][0:number]
         return importances, std, names
 
+    add_title = False
     for ax, (label, model) in zip(axs, models.items()):
         logger.debug("Plotting grid plot importances for dataset {}".format(label))
         importances, std, names = get_importances(model)
 
         ax.set_title(label)
-        if '(' in label:
-            l = label.index('(')
-            label = ' '.join(label[0:l].split(" ")) + '\n' + ' '.join(label[l:].split(" ")) + '\n'
-        else:
-            l = int(len(label.split(" ")) / 2) + 1
-            label = ' '.join(label.split(" ")[0:l]) + '\n' + ' '.join(label.split(" ")[l:]) + '\n'
+        if "Missing" in label:
+            label = label.split(' Missing')[0]
+            add_title = True
+        label = format_name(label)
         ax.barh(range(number), importances, color="r", xerr=std, align="center")
-        ax.set_yticklabels(names, fontsize=8)
+        ax.spines['right'].set_visible(False)
+        ax.spines['top'].set_visible(False)
+        ax.set_yticklabels(names, fontsize=6)
         ax.set_yticks(range(number))
-
-        ax.set_title(label, y=0.90, fontsize=10)
-
+        ax.xaxis.set_tick_params(labelsize=8)
+        ax.set_xticks(np.arange(0, 1.01, step=0.1).round(1))
+        ax.set_title(label, y=0.93, fontsize=10)
+    for ax in axs[n_models:]:
+        ax.set_axis_off()
+    if add_title:
+        fig.suptitle('With Missing CCS FIN', fontsize=16, y=0.92)
     fig_param['fname'] = fname
     plt.savefig(**fig_param)
 
@@ -381,10 +396,13 @@ def plot_learning_curves_importances(result_dirs, csv_reader, vulnerable_classes
             name = RANDOM_FOREST_CLASSIFIER.lower() + '-' + '_'.join(label.lower().split(' ')) + '.pickle'
             f = open(os.path.join(result_dirs.models_folder, name), 'rb')
             model = pickle.load(f)
-            model.n_estimators = 500
-            model.fit(X, y)
+
+            # model.n_estimators = 300
+            # model.fit(X, y)
             if missing_ccs_fin:
                 models_missing_ccs_fin[label] = model
+                models_missing_ccs_fin[label + '1'] = model
+                models_missing_ccs_fin[label + '2'] = model
             else:
                 models_ccs_fin[label] = model
         if len(estimators) != 0 and plotlr:
@@ -392,10 +410,15 @@ def plot_learning_curves_importances(result_dirs, csv_reader, vulnerable_classes
             fname = os.path.join(result_dirs.learning_curves_folder, "learning_curves_{}.{}".format(label, extension))
             learning_curve_for_label(estimators, X, y, condition, fname, extension)
         logger.info("Vulnerability {} Manipulation {}".format(condition, label))
-
+    feature_names = []
+    for f in csv_reader.feature_names:
+        f = f.replace('_', ' ').replace('.', ' ').replace(':', ' ').title()
+        feature_names.append(format_name(f))
+    feature_names = np.array(feature_names)
+    number = 10
     if bool(models_missing_ccs_fin):
         fname = os.path.join(result_dirs.importance_folder, "importance_missing_ccs_fin.{}".format(extension))
-        plot_importance(models_missing_ccs_fin, csv_reader.feature_names, fname, extension=extension, number=15)
+        plot_importance(models_missing_ccs_fin, feature_names, fname, extension=extension, number=number)
     if bool(models_ccs_fin):
         fname = os.path.join(result_dirs.importance_folder, "importance_ccs_fin.{}".format(extension))
-        plot_importance(models_ccs_fin, csv_reader.feature_names, fname, extension=extension, number=15)
+        plot_importance(models_ccs_fin, feature_names, fname, extension=extension, number=number)

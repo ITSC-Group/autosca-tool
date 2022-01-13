@@ -26,7 +26,7 @@ custom_dict = {RandomClassifier.__name__: 0,
                ExtraTreesClassifier.__name__: 11,
 
                AdaBoostClassifier.__name__: 12,
-               GradientBoostingClassifier.__name__: 13,
+               GradientBoostingClassifier.__name__: 13
                }
 
 classifiers_space = []
