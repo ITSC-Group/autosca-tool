@@ -59,7 +59,7 @@ if __name__ == "__main__":
     parser.add_argument('-se', '--skipexisting', type=str2bool, nargs='?', const=True, default=False,
                         help='The decision to skip the learning task for the current configuration')
     parser.add_argument('-dl', '--debuglevel', choices=list(debug_levels.keys()), default=1,
-                        help='The decision to skip the learning task for the current configuration')
+                        help='The Debug level specifying if the Debug and Intermediate Result folder to be stored')
     args = parser.parse_args()
     cv_iterations = int(args.cv_iterations)
     hp_iterations = int(args.iterations)
