@@ -24,30 +24,33 @@ if __name__ == "__main__":
     parser.add_argument('-f', '--folder', required=True,
                         help='Folder that contains the input files Packets.pcap and Client Requests.csv '
                              'and that the output files will be written to')
-    parser.add_argument('-cvt', '--cv_technique', choices=cv_choices, default='auto',
-                        help='Cross-Validation Technique to be used for generating evaluation samples')
-    parser.add_argument('-cv', '--cv_iterations', type=int, default=30,
-                        help='Number of iteration for training and testing the models')
     args = parser.parse_args()
-    cv_iter = int(args.cv_iterations)
     folder = args.folder
-    cv_technique = str(args.cv_technique)
+
+    result_dirs = ResultDirectories(folder=folder)
+    if os.path.exists(result_dirs.accuracies_file):
+        with open(result_dirs.accuracies_file, 'rb') as f:
+            metrics_dictionary = pickle.load(f)
+        f.close()
+    else:
+        raise ValueError("The learning simulations are not done yet")
+    result_dirs.debug_level = metrics_dictionary[DEBUG_LEVEL]
+    cv_iterations_dict = metrics_dictionary[CV_ITERATIONS_LABEL]
+    setup_logging(log_path=result_dirs.plotting_log_file)
+    logger = logging.getLogger("Plotting")
+    logger.info("Arguments {}".format(args))
+
     csv_reader = CSVReader(folder=folder, seed=42)
     dataset = args.folder.split('/')[-1]
     random_state = check_random_state(42)
 
     figsize = (7, 5)
     sfigsize = (4, 4)
-    result_dirs = ResultDirectories(folder=folder)
-
-    setup_logging(log_path=result_dirs.plotting_log_file, level=logging.ERROR)
-    logger = logging.getLogger("Plotting")
-    logger.info("Arguments {}".format(args))
 
     with open(result_dirs.vulnerable_file, 'rb') as f:
         vulnerable_classes = pickle.load(f)
     logger.info("Vulnerable classes are {}".format(vulnerable_classes))
-    vulnerable_classes_random = vulnerable_classes[TTEST_PVAL + '-random']
+    vulnerable_classes_random = vulnerable_classes[P_VALUE_COLUMN]
     mpl.rcParams.update({'font.size': 13, "font.family": "serif",
                          'font.serif': ['Times New Roman'] + plt.rcParams['font.serif']})
 
@@ -58,11 +61,12 @@ if __name__ == "__main__":
                   facecolor='white', edgecolor='k', fontsize=10)
 
     extension = 'png'
-    plts = bar_grid_for_dataset(data_frame, ACCURACY, np.sqrt(cv_iter), result_dirs.plots_folder, figsize=sfigsize,
-                                extension=extension, logger=logger)
-    plts = classwise_barplot_for_dataset(data_frame, ACCURACY, np.sqrt(cv_iter), result_dirs.plots_folder, figsize=sfigsize,
-                                         extension=extension, logger=logger)
+    plot_learning_curves_importances(result_dirs, csv_reader, vulnerable_classes_random, extension=extension)
 
+    plts = bar_grid_for_dataset(data_frame, ACCURACY, np.sqrt(cv_iterations_dict[N_SPLITS]), result_dirs.plots_folder,
+                                figsize=sfigsize, extension=extension)
+    plts = classwise_barplot_for_dataset(data_frame, ACCURACY, np.sqrt(cv_iterations_dict[N_SPLITS]),
+                                         result_dirs.plots_folder, figsize=sfigsize, extension=extension)
 
-    plot_learning_curves_importances(result_dirs, csv_reader, vulnerable_classes, extension=extension, logger=logger)
     logger.info("Finished Plotting")
+    result_dirs.remove_folders()

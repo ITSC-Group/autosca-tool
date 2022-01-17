@@ -7,10 +7,8 @@ import pickle
 from itertools import product
 from scipy.stats import fisher_exact
 from statsmodels.stats.multitest import multipletests
-
 from classification_model.result_directories import ResultDirectories
 from pycsca import *
-from utils import test_size, cols_metrics, cols_pvals, columns
 
 
 def holm_bonferroni(data_frame, label, pval_col):
@@ -23,27 +21,36 @@ def holm_bonferroni(data_frame, label, pval_col):
     return p_vals, pvals_corrected, reject
 
 
+def get_confidence(value):
+    if value in [1, 2]:
+        level = LOW
+    elif value in [3, 4, 5]:
+        level = MEDIUM
+    else:
+        level = HIGH
+    return level
+
+
 def update_report(report_string, rejected, p_values, label):
-    append_string = 'The server is Vulnerable to Class {} \n'.format(label)
+    append_string = 'The server is Vulnerable to Padding Manipulation {} \n'.format(label)
     report_string = report_string + append_string
-    append_string = 'Highest p-value {}, Lowest p-value {}, Number of Algorithms {} \n'.format(np.max(p_values),
-                                                                                               np.min(p_values),
-                                                                                               np.sum(rejected))
+    append_string = 'Highest p-value: {}, Lowest p-value: {}, Number of Algorithms: {} ' \
+                    'Confidence: {} \n'.format(np.max(p_values), np.min(p_values), np.sum(rejected),
+                                               get_confidence(np.sum(rejected)))
     report_string = report_string + append_string
-    report_string = report_string + "********************************************************************************\n"
+    report_string = report_string + "**************************************************************************" \
+                                    "**********************************************\n"
     return report_string
 
-if __name__== "__main__":
+
+if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('-f', '--folder', required=True,
                         help='Folder that contains the input files Packets.pcap and Client Requests.csv '
                              'and that the output files will be written to')
-    parser.add_argument('-cvt', '--cv_technique', choices=cv_choices, default='auto',
-                        help='Cross-Validation Technique to be used for generating evaluation samples')
 
     args = parser.parse_args()
     folder = args.folder
-    cv_technique = str(args.cv_technique)
     result_dirs = ResultDirectories(folder=folder)
     setup_logging(log_path=result_dirs.pvalue_cal_log_file)
     logger = logging.getLogger("P-Value Calculation")
@@ -54,9 +61,11 @@ if __name__== "__main__":
     dataset = args.folder.split('/')[-1]
     vulnerable_classes = dict()
     report_string = ''
+    short_report_string = ''
+    confidence_in_vulnerability = dict()
+    TOTAL_ALGORITHMS = len(custom_dict) - 3
     for k in cols_pvals:
         vulnerable_classes[k] = []
-
     logger.info("Starting the p-value calculation")
     if os.path.exists(result_dirs.accuracies_file):
         with open(result_dirs.accuracies_file, 'rb') as f:
@@ -65,6 +74,7 @@ if __name__== "__main__":
     else:
         raise ValueError("The learning simulations are not done yet")
     cv_iterations_dict = metrics_dictionary[CV_ITERATIONS_LABEL]
+    result_dirs.debug_level = metrics_dictionary[DEBUG_LEVEL]
     final = []
     for missing_ccs_fin, (label, j) in product(csv_reader.ccs_fin_array, list(csv_reader.label_mapping.items())):
         if j == 0:
@@ -92,10 +102,10 @@ if __name__== "__main__":
             accuracies = scores[ACCURACY]
             confusion_matrices = scores[CONFUSION_MATRICES]
             cm_single = scores[CONFUSION_MATRIX_SINGLE]
-            if cv_technique == 'kccv':
-                n_training_folds = cv_iterations_dict[label] - 1
+            if cv_iterations_dict[CV_ITERATOR] == 'StratifiedKFold':
+                n_training_folds = cv_iterations_dict[N_SPLITS] - 1
                 n_test_folds = 1
-            elif cv_technique == 'mccv':
+            elif cv_iterations_dict[CV_ITERATOR] == 'StratifiedShuffleSplit':
                 n_training_folds = 1 - test_size
                 n_test_folds = test_size
             else:
@@ -127,8 +137,8 @@ if __name__== "__main__":
             pvalue_median = np.median(p_values)
             logger.info("P-values {}".format(p_values))
 
-            reject, pvals_corrected, _, alpha = multipletests(p_values, 0.01, method='holm', is_sorted=False)
-            logger.info("Holm Bonnferroni Rejected Hypothesis: {} min: {} max: {}".format(np.sum(reject),
+            rejected, pvals_corrected, _, alpha = multipletests(p_values, 0.01, method='holm', is_sorted=False)
+            logger.info("Holm Bonnferroni Rejected Hypothesis: {} min: {} max: {}".format(np.sum(rejected),
                                                                                           np.min(pvals_corrected),
                                                                                           np.max(pvals_corrected)))
 
@@ -167,19 +177,19 @@ if __name__== "__main__":
             continue
         one_row = [label]
         for pval_col in cols_pvals:
-            p_vals, pvals_corrected, reject = holm_bonferroni(data_frame, label, pval_col=pval_col)
-            data_frame.loc[data_frame['Dataset'] == label, [pval_col + '-rejected']] = reject
+            p_vals, pvals_corrected, rejected = holm_bonferroni(data_frame, label, pval_col=pval_col)
+            data_frame.loc[data_frame['Dataset'] == label, [pval_col + '-rejected']] = rejected
             # print(label, pval_col, reject)
             # print(data_frame[data_frame['Dataset'] == label][[pval_col + '-corrected', pval_col + '-rejected']])
             # print('##############################################################################')
-            one_row.extend([np.any(reject), np.sum(reject)])
-            if np.any(reject):
+            one_row.extend([np.any(rejected), np.sum(rejected)])
+            if np.any(rejected):
                 vulnerable_classes[pval_col].append(label)
                 logger.info("Adding class {} for pval {}".format(label, pval_col))
-                if pval_col == CTTEST_PVAL + '-random':
-                    report_string = update_report(report_string, reject, pvals_corrected, label)
+                if pval_col == P_VALUE_COLUMN:
+                    report_string = update_report(report_string, rejected, pvals_corrected, label)
+                    confidence_in_vulnerability[label] = np.sum(rejected)
         final.append(one_row)
-
     logger.info(print_dictionary(vulnerable_classes))
     data_frame['rank'] = data_frame['Model'].map(custom_dict)
     data_frame.sort_values(by=['Dataset', 'rank'], ascending=[True, True], inplace=True)
@@ -195,10 +205,21 @@ if __name__== "__main__":
         pickle.dump(vulnerable_classes, class_file)
 
     if report_string != '':
-        report_string = report_string + 'The Server is Vulnerable to Side Channel attacks'
+        maxi = np.max(list(confidence_in_vulnerability.values()))
+        short_report_string = 'The Server is Vulnerable to Side Channel attacks with {} confidence \n'.format(
+            get_confidence(maxi))
+        report_string = short_report_string + report_string
+        short_report_string = short_report_string + "\nPadding Manipulation: Vulnerability Confidence"
+        for k, v in confidence_in_vulnerability.items():
+            short_report_string = short_report_string + "\n{}: {}".format(k, get_confidence(v))
     else:
-        report_string = report_string + 'The Server is Not-Vulnerable to Side Channel attacks'
+        short_report_string = 'The Server is Not-Vulnerable to Side Channel attacks \n'
+        report_string = short_report_string + report_string
+
+    text_file = open(result_dirs.detailed_report_file, "w")
+    n = text_file.write(report_string)
+    text_file.close()
 
     text_file = open(result_dirs.report_file, "w")
-    n = text_file.write(report_string)
+    n = text_file.write(short_report_string)
     text_file.close()
