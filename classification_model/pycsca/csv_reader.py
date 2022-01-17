@@ -7,9 +7,8 @@ import pandas as pd
 import seaborn as sns
 from sklearn.preprocessing import LabelEncoder
 
-from pycsca.utils import print_dictionary
 from .constants import LABEL_COL, MISSING_CCS_FIN
-from .utils import str2bool
+from .utils import str2bool, print_dictionary
 
 sns.set(color_codes=True)
 plt.style.use('default')

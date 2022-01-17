@@ -10,6 +10,7 @@ import numpy as np
 import pandas as pd
 from sklearn.utils import check_random_state
 
+from classification_model.result_directories import ResultDirectories
 from pycsca.constants import *
 from pycsca.csv_reader import CSVReader
 from pycsca.plot_utils import classwise_barplot_for_dataset, \
@@ -23,8 +24,7 @@ if __name__ == "__main__":
     parser.add_argument('-f', '--folder', required=True,
                         help='Folder that contains the input files Packets.pcap and Client Requests.csv '
                              'and that the output files will be written to')
-    choices = ['kccv', 'mccv']
-    parser.add_argument('-cvt', '--cv_technique', choices=choices, default='mccv',
+    parser.add_argument('-cvt', '--cv_technique', choices=cv_choices, default='auto',
                         help='Cross-Validation Technique to be used for generating evaluation samples')
     parser.add_argument('-cv', '--cv_iterations', type=int, default=30,
                         help='Number of iteration for training and testing the models')
@@ -38,45 +38,31 @@ if __name__ == "__main__":
 
     figsize = (7, 5)
     sfigsize = (4, 4)
-    subfolder = cv_technique.upper()
-    models_folder = os.path.join(folder, subfolder, 'Models')
+    result_dirs = ResultDirectories(folder=folder)
 
-    plots_folder = os.path.join(folder, subfolder, 'Plots')
-    create_dir_recursively(plots_folder)
-    imp_folder = os.path.join(plots_folder, 'Feature Importance')
-    create_dir_recursively(imp_folder)
-
-    log_file = os.path.join(folder, subfolder, 'plotting.log')
-    setup_logging(log_path=log_file, level=logging.ERROR)
+    setup_logging(log_path=result_dirs.plotting_log_file, level=logging.ERROR)
     logger = logging.getLogger("Plotting")
     logger.info("Arguments {}".format(args))
 
-    with open(os.path.join(folder, subfolder, 'Vulnerable Classes.pickle'), 'rb') as f:
+    with open(result_dirs.vulnerable_file, 'rb') as f:
         vulnerable_classes = pickle.load(f)
     logger.info("Vulnerable classes are {}".format(vulnerable_classes))
     vulnerable_classes_random = vulnerable_classes[TTEST_PVAL + '-random']
     mpl.rcParams.update({'font.size': 13, "font.family": "serif",
                          'font.serif': ['Times New Roman'] + plt.rcParams['font.serif']})
 
-    file_path = os.path.join(folder, subfolder, 'Model Results.csv')
-    logger.info("Plotting Results are {}".format(file_path))
-    data_frame = pd.read_csv(file_path, index_col=0)
+    logger.info("Plotting Results are {}".format(result_dirs.model_result_file_path))
+    data_frame = pd.read_csv(result_dirs.model_result_file_path, index_col=0)
     logger.info("Accuracies are {}".format(data_frame.head()))
     params = dict(loc='upper center', bbox_to_anchor=(0.6, -0.1), ncol=4, fancybox=False, shadow=True,
                   facecolor='white', edgecolor='k', fontsize=10)
 
     extension = 'png'
-    plts = bar_grid_for_dataset(data_frame, ACCURACY, np.sqrt(cv_iter), plots_folder, figsize=sfigsize,
+    plts = bar_grid_for_dataset(data_frame, ACCURACY, np.sqrt(cv_iter), result_dirs.plots_folder, figsize=sfigsize,
                                 extension=extension, logger=logger)
-    plts = classwise_barplot_for_dataset(data_frame, ACCURACY, np.sqrt(cv_iter), plots_folder, figsize=sfigsize,
+    plts = classwise_barplot_for_dataset(data_frame, ACCURACY, np.sqrt(cv_iter), result_dirs.plots_folder, figsize=sfigsize,
                                          extension=extension, logger=logger)
 
-    lrcurve_folder = os.path.join(plots_folder, 'Learning Curves')
-    if not os.path.exists(lrcurve_folder):
-        os.mkdir(lrcurve_folder)
-    imp_folder = os.path.join(plots_folder, 'Feature Importance')
-    if not os.path.exists(imp_folder):
-        os.mkdir(imp_folder)
-    plot_learning_curves_importances(models_folder, csv_reader, vulnerable_classes, lrcurve_folder, imp_folder,
-                                     extension=extension, logger=logger)
+
+    plot_learning_curves_importances(result_dirs, csv_reader, vulnerable_classes, extension=extension, logger=logger)
     logger.info("Finished Plotting")
