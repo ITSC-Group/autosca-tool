@@ -1,6 +1,6 @@
 from typing import List, Optional, Dict, Union
 
-from pyshark.capture.capture import Capture
+from pyshark.capture.capture import Capture, TSharkCrashException
 import pyshark
 from pyshark.packet.packet import Packet
 
@@ -25,7 +25,6 @@ class IterableCapture:
             # The slice is exhausted, load the next
             self.load_next_slice()
             result = (self.current_tcp_index, next(self.slice_iterator))
-
         self.current_tcp_index = self.current_tcp_index + 1
         return result
 
@@ -34,10 +33,15 @@ class IterableCapture:
         slice_end = slice_start + self.slice_size
         wireshark_display_filter = f'tcp.stream >= {slice_start} and tcp.stream < {slice_end}'
         print(f'Processing {wireshark_display_filter}')
-        slice_capture = pyshark.FileCapture(
-            self.capture_path,
-            keep_packets=False,
-            display_filter=wireshark_display_filter)
+        try:
+            slice_capture = pyshark.FileCapture(
+                self.capture_path,
+                keep_packets=False,
+                display_filter=wireshark_display_filter)
+        except TSharkCrashException:
+            print(f'Warning: TShark returned a non-zero returncode and might have crashed. '
+                  f'When running docker, this happens because of asyncio and is no cause for concern.')
+            slice_capture = [].__iter__()
         self.next_slice_start = slice_end
         self.slice_iterator = self.splice_sessions(slice_capture)
 

@@ -8,7 +8,7 @@ verify_ssl = true
 [packages]
 numpy = "*"
 scipy = "*"
-scikit-learn = '*'
+scikit-learn = "*"
 scikit-optimize = "*"
 pandas = "*"
 h5py = "*"
