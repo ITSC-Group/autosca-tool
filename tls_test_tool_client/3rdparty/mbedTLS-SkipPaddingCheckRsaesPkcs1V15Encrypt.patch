@@ -15,7 +15,7 @@
 @@ -1205,6 +1205,7 @@
      uint16_t pms_random_byte_index; /*!< indicate which byte of the random will be set to zero */
      uint16_t server_simulation_id; /*!< indicate if and which server will be simulated */
-     useconds_t server_simulation_delay; /*!< indicate the amount of delay to simulate in microseconds */
+     unsigned int server_simulation_delay; /*!< indicate the amount of delay to simulate in microseconds */
 +    unsigned int skip_pms_version_check : 1; /*!< indicate if check of the version in the pre-master secret will be skipped */
  };
  

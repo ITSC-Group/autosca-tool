@@ -20,6 +20,9 @@ git config core.filemode false
 echo "Installing classification model dependencies"
 cd "$TOOL_FOLDER/classification_model" || exit
 pipenv install
+echo "Installing unified python dependencies"
+cd "$TOOL_FOLDER" || exit
+pipenv install
 # pipenv run python3 setup.py install
 
 echo "Building TLS attacker client"
