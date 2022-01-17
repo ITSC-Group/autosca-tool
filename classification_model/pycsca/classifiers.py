@@ -100,32 +100,31 @@ classifiers_space.append((clf, params, search_space))
 clf = DecisionTreeClassifier
 params = dict(criterion="gini", splitter="best", max_depth=None, min_samples_split=2, min_samples_leaf=1,
               min_weight_fraction_leaf=0., max_features=None, random_state=None, max_leaf_nodes=None,
-              min_impurity_decrease=0., min_impurity_split=None, class_weight=None)
+              min_impurity_decrease=0., class_weight=None)
 
 search_space = {"criterion": Categorical(["gini", "entropy"]),
                 "max_depth": Integer(6, 20),  # values of max_depth are integers from 6 to 20
                 "max_features": Categorical(['auto', 'sqrt', 'log2']),
                 "min_samples_leaf": Integer(2, 10),
-                "min_samples_split": Integer(2, 10),
                 "splitter": Categorical(["best", "random"])
                 }
+
 classifiers_space.append((clf, params, search_space))
 clf = ExtraTreeClassifier
 params = dict(criterion="gini", splitter="random", max_depth=None, min_samples_split=2, min_samples_leaf=1,
               min_weight_fraction_leaf=0., max_features="auto", random_state=None, max_leaf_nodes=None,
-              min_impurity_decrease=0., min_impurity_split=None, class_weight=None, ccp_alpha=0.0)
+              min_impurity_decrease=0., class_weight=None, ccp_alpha=0.0)
 search_space = {"criterion": Categorical(["gini", "entropy"]),
                 "splitter": Categorical(["random", "best"]),
                 "max_depth": Integer(6, 20),  # values of max_depth are integers from 6 to 20
                 "max_features": Categorical(['auto', 'sqrt', 'log2']),
                 "min_samples_leaf": Integer(2, 10),
-                "min_samples_split": Integer(2, 10),
                 }
 classifiers_space.append((clf, params, search_space))
 
 clf = RandomForestClassifier
 params = dict(bootstrap=True, class_weight=None, criterion='gini', max_depth=14, max_features='sqrt',
-              max_leaf_nodes=None, min_impurity_decrease=0.0, min_impurity_split=None, min_samples_leaf=2,
+              max_leaf_nodes=None, min_impurity_decrease=0.0, min_samples_leaf=2,
               min_samples_split=4, min_weight_fraction_leaf=0.0, n_estimators=300, n_jobs=None, oob_score=False,
               random_state=None, verbose=0, warm_start=False)
 search_space = {"criterion": Categorical(["gini", "entropy"]),
@@ -141,7 +140,7 @@ classifiers_space.append((clf, params, search_space))
 
 clf = ExtraTreesClassifier
 params = dict(bootstrap=True, class_weight=None, criterion='gini', max_depth=14, max_features='sqrt',
-              max_leaf_nodes=None, min_impurity_decrease=0.0, min_impurity_split=None, min_samples_leaf=2,
+              max_leaf_nodes=None, min_impurity_decrease=0.0, min_samples_leaf=2,
               min_samples_split=4, min_weight_fraction_leaf=0.0, n_estimators=300, n_jobs=None, oob_score=False,
               random_state=None, verbose=0, warm_start=False)
 search_space = {"criterion": Categorical(["gini", "entropy"]),
@@ -165,7 +164,7 @@ classifiers_space.append((clf, params, search_space))
 clf = GradientBoostingClassifier
 params = dict(loss='deviance', learning_rate=0.1, n_estimators=100, subsample=1.0, criterion='friedman_mse',
               min_samples_split=2, min_samples_leaf=1, min_weight_fraction_leaf=0.0, max_depth=3,
-              min_impurity_decrease=0.0, min_impurity_split=None, init=None, n_iter_no_change=5, tol=0.01,
+              min_impurity_decrease=0.0, init=None, n_iter_no_change=5, tol=0.01,
               validation_fraction=0.1, random_state=None, verbose=0)
 search_space = {"criterion": Categorical(["friedman_mse", "mse", "mae"]),
                 "learning_rate": Real(0.1, 1.0, 'log-uniform'),
