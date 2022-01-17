@@ -136,7 +136,6 @@ search_space = {"criterion": Categorical(["gini", "entropy"]),
                 }
 classifiers_space.append((clf, params, search_space))
 
-
 clf = ExtraTreesClassifier
 params = dict(bootstrap=True, class_weight=None, criterion='gini', max_depth=14, max_features='sqrt',
               max_leaf_nodes=None, min_impurity_decrease=0.0, min_samples_leaf=2,
@@ -175,4 +174,3 @@ search_space = {"criterion": Categorical(["friedman_mse", "mse", "mae"]),
                 "n_estimators": Integer(50, 300)
                 }
 classifiers_space.append((clf, params, search_space))
-

@@ -107,9 +107,9 @@ def format_name(name):
 
 def bar_grid_for_dataset(df, metric, std, folder, figsize=(4, 4), extension='png'):
     bar_width, df, fig_param, index, opacity, u_datasets, u_models, end = init_plots(df, extension, figsize, metric)
-    #u_datasets = u_datasets + u_datasets
-    #import random
-    #u_datasets = random.sample(u_datasets, n_d)
+    # u_datasets = u_datasets + u_datasets
+    # import random
+    # u_datasets = random.sample(u_datasets, n_d)
     n_datasets = len(u_datasets)
     n_d = n_datasets
     if n_datasets <= 12:
@@ -156,6 +156,7 @@ def bar_grid_for_dataset(df, metric, std, folder, figsize=(4, 4), extension='png
     fig_param['fname'] = fname
     fig.savefig(**fig_param)
     plt.show()
+
 
 def classwise_barplot_for_dataset(df, metric, std, folder, figsize=(3, 4), extension='png'):
     bar_width, df, fig_param, index, opacity, u_datasets, u_models, end = init_plots(df, extension, figsize, metric)
