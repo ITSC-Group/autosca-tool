@@ -5,11 +5,11 @@ from abc import ABCMeta
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
+import numpy as np
 from sklearn.preprocessing import LabelEncoder
 
-from pycsca.utils import print_dictionary
 from .constants import LABEL_COL, MISSING_CCS_FIN
-from .utils import str2bool
+from .utils import str2bool, print_dictionary
 
 sns.set(color_codes=True)
 plt.style.use('default')
@@ -86,6 +86,8 @@ class CSVReader(metaclass=ABCMeta):
         df['ratio_1_0'] = df.apply(
             lambda row: div(row, vals[True]) if str2bool(row.missing_ccs_fin) else div(row, vals[False]), axis=1)
         fname = os.path.join(self.dataset_folder, "label_frequency.csv")
+        self.minimum_instances = np.min(df['Frequency'].values)
+        self.logger.info('\t\n' + df.to_string().replace('\n', '\n\t'))
         df.to_csv(fname)
 
     def plot_class_distribution(self):

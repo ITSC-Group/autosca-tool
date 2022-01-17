@@ -248,7 +248,7 @@ public:
      * Set the delay of the server to be simulated in microseconds
      * @param delayInMicroseconds The delay of the simulated server in microseconds.
      */
-    virtual void setServerSimulationDelay(const useconds_t delayInMicroseconds) = 0;
+    virtual void setServerSimulationDelay(const unsigned int delayInMicroseconds) = 0;
 
 protected:
 	/**

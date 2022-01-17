@@ -120,12 +120,13 @@ def optimize_search_cv(classifier, params, search_space, cv_iterator, hp_iterati
             except Exception as err:
                 exception_type = type(err).__name__
                 logger.info("Exception {}, error {}".format(exception_type, err))
-                if bayes_search.best_params_ is not None:
-                    params = update_params(bayes_search, i, logger, params)
-                    if 'n_jobs' in params.keys():
-                        params['n_jobs'] = None
-                    logger.info("Updating best parameters for the classifier")
-                    logger.info("Optimizer Iterations done {}".format(len(bayes_search.cv_results_['params'])))
+                if "cv_results_" in vars(bayes_search) and "best_params_" in vars(bayes_search):
+                    if bayes_search.best_params_ is not None:
+                        params = update_params(bayes_search, i, logger, params)
+                        if 'n_jobs' in params.keys():
+                            params['n_jobs'] = None
+                        logger.info("Updating best parameters for the classifier")
+                        logger.info("Optimizer Iterations done {}".format(len(bayes_search.cv_results_['params'])))
 
             model = classifier(**params)
             model.fit(X_train, y_train)
