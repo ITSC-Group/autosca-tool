@@ -53,7 +53,7 @@ echo "Doing $CROSSVALIDATION_ITERATIONS crossvalidation iterations" >> "$CONFIG"
 echo "Doing $HYPERPARAMETER_ITERATIONS hyperparameter optimization iterations" >> "$CONFIG"
 
 START_TIME=$(date +%s)
-pipenv run python3 classification_model/train_models.py --folder="$FOLDER" --cv_technique=$CROSSVALIDATION_TECHNIQUE --cv_iterations=$CROSSVALIDATION_ITERATIONS --iterations=$HYPERPARAMETER_ITERATIONS --n_jobs=$PARALLEL_THREADS 2>&1 | tee "$FOLDER/Classification Model Training $1.log"
+pipenv run python3 classification_model/train_models.py --folder="$FOLDER" --cv_technique=$CROSSVALIDATION_TECHNIQUE --cv_iterations=$CROSSVALIDATION_ITERATIONS --iterations=$HYPERPARAMETER_ITERATIONS --n_jobs=$PARALLEL_THREADS 2>&1 | tee "$FOLDER/Classification Model Training.log"
 END_TIME=$(date +%s)
 DURATION="$(($END_TIME-$START_TIME))"
 echo "Finished $CROSSVALIDATION_TECHNIQUE classification model training, execution took $DURATION seconds"
@@ -61,10 +61,10 @@ echo "## Execution Time" >> "$CONFIG"
 echo "$DURATION seconds" >> "$CONFIG"
 
 echo "Generating report"
-pipenv run python3 classification_model/pvalues_calculation.py --folder="$FOLDER" --cv_technique=$CROSSVALIDATION_TECHNIQUE 2>&1 | tee "$FOLDER/Report Generation $1.log"
+pipenv run python3 classification_model/pvalues_calculation.py --folder="$FOLDER" 2>&1 | tee "$FOLDER/Report Generation.log"
 
 echo "Plotting the machine learning results"
-pipenv run python3 classification_model/plot_results.py --folder="$FOLDER" --cv_technique=$CROSSVALIDATION_TECHNIQUE --cv_iterations=$CROSSVALIDATION_ITERATIONS 2>&1 | tee "$FOLDER/Classification Model Plotting $1.log"
+pipenv run python3 classification_model/plot_results.py --folder="$FOLDER" 2>&1 | tee "$FOLDER/Classification Model Plotting.log"
 echo "Finished plotting"
 echo " " >> "$CONFIG"
 

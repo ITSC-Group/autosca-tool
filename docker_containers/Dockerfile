@@ -1,6 +1,5 @@
-# docker build -t itscgroup/autosca-analysis:0.7 -f docker_containers/Dockerfile .
+# docker build -t itscgroup/autosca-analysis:0.7 -t itscgroup/autosca-analysis:latest -f docker_containers/Dockerfile .
 # docker push itscgroup/autosca-analysis:0.7
-# docker tag itscgroup/autosca-analysis:0.7 itscgroup/autosca-analysis:latest
 # docker push itscgroup/autosca-analysis:latest
 # docker run -it --mount type=bind,source=/home/datasets,target=/home/datasets itscgroup/autosca-analysis:latest --folder /home/datasets/2021-12-20-damnvulnerableopenssl
 # docker run --mount type=bind,source=/home/datasets,target=/home/datasets --entrypoint "/bin/bash" -it itscgroup/autosca-analysis:latest

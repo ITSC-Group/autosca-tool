@@ -238,43 +238,31 @@ echo "Finished feature extraction, execution took $DURATION seconds"
 echo "## Execution Time" >> "$CONFIG"
 echo "$DURATION seconds" >> "$CONFIG"
 
-learning () {
-    echo "Starting $1 classification model training"
-    cd "$TOOL_FOLDER/classification_model" || exit
-    echo " " >> "$CONFIG"
-    echo "# Machine Learning" >> "$CONFIG"
-    echo "## Parameters" >> "$CONFIG"
-    echo "Using $1 crossvalidation technique" >> "$CONFIG"
-    echo "Doing $CROSSVALIDATION_ITERATIONS crossvalidation iterations" >> "$CONFIG"
-    echo "Doing $HYPERPARAMETER_ITERATIONS hyperparameter optimization iterations" >> "$CONFIG"
+echo "Starting classification model training"
+cd "$TOOL_FOLDER/classification_model" || exit
+echo " " >> "$CONFIG"
+echo "# Machine Learning" >> "$CONFIG"
+echo "## Parameters" >> "$CONFIG"
+echo "Using $CROSSVALIDATION_TECHNIQUE crossvalidation technique" >> "$CONFIG"
+echo "Doing $CROSSVALIDATION_ITERATIONS crossvalidation iterations" >> "$CONFIG"
+echo "Doing $HYPERPARAMETER_ITERATIONS hyperparameter optimization iterations" >> "$CONFIG"
 
-    START_TIME=$(date +%s)
-    pipenv run python3 train_models.py --folder="$FOLDER" --cv_technique=$1 --cv_iterations=$CROSSVALIDATION_ITERATIONS --iterations=$HYPERPARAMETER_ITERATIONS --n_jobs=$PARALLEL_THREADS 2>&1 | tee "$FOLDER/Classification Model Training $1.log"
-    END_TIME=$(date +%s)
-    DURATION="$(($END_TIME-$START_TIME))"
-    echo "Finished $1 classification model training, execution took $DURATION seconds"
-    echo "## Execution Time" >> "$CONFIG"
-    echo "$DURATION seconds" >> "$CONFIG"
+START_TIME=$(date +%s)
+pipenv run python3 train_models.py --folder="$FOLDER" --cv_technique=$CROSSVALIDATION_TECHNIQUE --cv_iterations=$CROSSVALIDATION_ITERATIONS --iterations=$HYPERPARAMETER_ITERATIONS --n_jobs=$PARALLEL_THREADS 2>&1 | tee "$FOLDER/Classification Model Training.log"
+END_TIME=$(date +%s)
+DURATION="$(($END_TIME-$START_TIME))"
+echo "Finished classification model training, execution took $DURATION seconds"
+echo "## Execution Time" >> "$CONFIG"
+echo "$DURATION seconds" >> "$CONFIG"
 
 
-    echo "Generating report"
-    pipenv run python3 pvalues_calculation.py --folder="$FOLDER" --cv_technique=$1 2>&1 | tee "$FOLDER/Report Generation $1.log"
+echo "Generating report"
+pipenv run python3 pvalues_calculation.py --folder="$FOLDER" 2>&1 | tee "$FOLDER/Report Generation.log"
 
-    echo "Plotting the machine learning results"
-    pipenv run python3 plot_results.py --folder="$FOLDER" --cv_technique=$1 --cv_iterations=$CROSSVALIDATION_ITERATIONS 2>&1 | tee "$FOLDER/Classification Model Plotting $1.log"
-    echo "Finished plotting"
-    echo " " >> "$CONFIG"
-}
-
-if [ "$SKIP_LEARNING" = "0" ]; then
-    if [ "$ALL_TESTS" = "1" ]; then
-        # Run experiment both with kccv and mccv, regardless of CV parameter
-        learning "kccv"
-        learning "mccv"
-    else
-        learning $CROSSVALIDATION_TECHNIQUE
-    fi
-fi
+echo "Plotting the machine learning results"
+pipenv run python3 plot_results.py --folder="$FOLDER" --cv_iterations=$CROSSVALIDATION_ITERATIONS 2>&1 | tee "$FOLDER/Classification Model Plotting.log"
+echo "Finished plotting"
+echo " " >> "$CONFIG"
 
 echo "Experiment run finished" >> "$CONFIG"
 echo "Experiment run finished"
