@@ -61,10 +61,10 @@ echo "## Execution Time" >> "$CONFIG"
 echo "$DURATION seconds" >> "$CONFIG"
 
 echo "Generating report"
-pipenv run python3 classification_model/pvalues_calculation.py --folder="$FOLDER" --cv_technique=$CROSSVALIDATION_TECHNIQUE 2>&1 | tee "$FOLDER/Report Generation $1.log"
+pipenv run python3 classification_model/pvalues_calculation.py --folder="$FOLDER" 2>&1 | tee "$FOLDER/Report Generation $1.log"
 
 echo "Plotting the machine learning results"
-pipenv run python3 classification_model/plot_results.py --folder="$FOLDER" --cv_technique=$CROSSVALIDATION_TECHNIQUE --cv_iterations=$CROSSVALIDATION_ITERATIONS 2>&1 | tee "$FOLDER/Classification Model Plotting $1.log"
+pipenv run python3 classification_model/plot_results.py --folder="$FOLDER" 2>&1 | tee "$FOLDER/Classification Model Plotting $1.log"
 echo "Finished plotting"
 echo " " >> "$CONFIG"
 
