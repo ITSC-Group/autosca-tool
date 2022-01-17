@@ -1,6 +1,9 @@
-# docker build -t autosca-tool:0.5 -f docker_containers/Dockerfile .
-# docker run -it --mount type=bind,source=/home/datasets,target=/home/datasets autosca-tool:0.5 --folder /home/datasets/2021-12-20-damnvulnerableopenssl
-# docker run --mount type=bind,source=/home/datasets,target=/home/datasets --entrypoint "/bin/bash" -it autosca-tool:0.5
+# docker build -t itscgroup/autosca-analysis:0.7 -f docker_containers/Dockerfile .
+# docker push itscgroup/autosca-analysis:0.7
+# docker tag itscgroup/autosca-analysis:0.7 itscgroup/autosca-analysis:latest
+# docker push itscgroup/autosca-analysis:latest
+# docker run -it --mount type=bind,source=/home/datasets,target=/home/datasets itscgroup/autosca-analysis:latest --folder /home/datasets/2021-12-20-damnvulnerableopenssl
+# docker run --mount type=bind,source=/home/datasets,target=/home/datasets --entrypoint "/bin/bash" -it itscgroup/autosca-analysis:latest
 FROM amancevice/pandas
 COPY docker_containers/install_packages.sh /autosca-tool/
 WORKDIR /autosca-tool
