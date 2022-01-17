@@ -10,7 +10,7 @@ import numpy as np
 import pandas as pd
 from sklearn.utils import check_random_state
 
-from classification_model.result_directories import ResultDirectories
+from .result_directories import ResultDirectories
 from pycsca.constants import *
 from pycsca.csv_reader import CSVReader
 from pycsca.plot_utils import classwise_barplot_for_dataset, \

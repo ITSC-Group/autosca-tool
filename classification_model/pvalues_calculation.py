@@ -7,7 +7,7 @@ import pickle
 from itertools import product
 from scipy.stats import fisher_exact
 from statsmodels.stats.multitest import multipletests
-from classification_model.result_directories import ResultDirectories
+from .result_directories import ResultDirectories
 from pycsca import *
 
 
