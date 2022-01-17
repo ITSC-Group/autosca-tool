@@ -79,11 +79,10 @@ search_space = {"loss": Categorical(['hinge', 'log', 'modified_huber', 'squared_
 classifiers_space.append((clf, params, search_space))
 
 clf = RidgeClassifier
-params = dict(alpha=1.0, fit_intercept=True, normalize=False, copy_X=True, max_iter=1000, tol=1e-3, class_weight=None,
+params = dict(alpha=1.0, fit_intercept=True, copy_X=True, max_iter=1000, tol=1e-3, class_weight=None,
               solver="auto", random_state=None)
 search_space = {"alpha": Real(0.5, 10, 'log-uniform'),
                 "tol": Real(1e-5, 0.5, 'log-uniform'),
-                "normalize": Categorical([True, False]),
                 "fit_intercept": Categorical([True, False]),
                 "solver": Categorical(['auto', 'svd', 'cholesky', 'lsqr', 'sparse_cg', 'sag', 'saga'])}
 classifiers_space.append((clf, params, search_space))
