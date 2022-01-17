@@ -1,5 +1,3 @@
-import copy
-
 import argparse
 import logging
 import numpy as np
@@ -11,7 +9,7 @@ from itertools import product
 from sklearn.model_selection import StratifiedKFold, StratifiedShuffleSplit
 from sklearn.utils import check_random_state
 
-from .result_directories import ResultDirectories
+from result_directories import ResultDirectories
 from pycsca.classification_test import optimize_search_cv
 from pycsca.classifiers import classifiers_space
 from pycsca.constants import *

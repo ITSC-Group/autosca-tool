@@ -7,9 +7,8 @@ import pickle
 from itertools import product
 from scipy.stats import fisher_exact
 from statsmodels.stats.multitest import multipletests
-from .result_directories import ResultDirectories
 from pycsca import *
-
+from result_directories import ResultDirectories
 
 def holm_bonferroni(data_frame, label, pval_col):
     searchFor = [RandomClassifier.__name__, MajorityVoting.__name__, PriorClassifier.__name__]
