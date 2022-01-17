@@ -56,8 +56,7 @@ if __name__ == "__main__":
     parser.add_argument('-cvt', '--cv_technique', choices=cv_choices, default='auto',
                         help='Cross-Validation Technique to be used for generating evaluation samples')
     parser.add_argument('-nj', '--n_jobs', type=int, default=8, help='Number of jobs to be used for parallelism')
-    parser.add_argument('-se', '--skipexisting', type=str2bool, nargs='?',
-                        const=True, default=False,
+    parser.add_argument('-se', '--skipexisting', type=str2bool, nargs='?', const=True, default=False,
                         help='The decision to skip the learning task for the current configuration')
     parser.add_argument('-dl', '--debuglevel', choices=list(debug_levels.keys()), default=1,
                         help='The decision to skip the learning task for the current configuration')

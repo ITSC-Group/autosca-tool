@@ -121,7 +121,7 @@ def bar_grid_for_dataset(df, metric, std, folder, figsize=(4, 4), extension='png
     elif n_datasets <= 20:
         c = 4
         r = 5
-    figsize = (4.3 * c, 3.5 * r)
+    figsize = (4.5 * c, 3.5 * r)
     logger.info('Datasets {}, figsize {}, rows {}, cols {}'.format(n_datasets, figsize, r, c))
     fig, axs = plt.subplots(nrows=r, ncols=c, sharex=True, sharey=True, figsize=figsize, frameon=True, edgecolor='k',
                             facecolor='white')
@@ -152,7 +152,7 @@ def bar_grid_for_dataset(df, metric, std, folder, figsize=(4, 4), extension='png
         i = i + 1
     for ax in axs[n_datasets:]:
         ax.set_axis_off()
-    fname = os.path.join(folder, "plot_grid_{}.{}".format(n_d, extension))
+    fname = os.path.join(folder, f"plot_grid.{extension}")
     fig_param['fname'] = fname
     fig.savefig(**fig_param)
     plt.show()
@@ -401,8 +401,6 @@ def plot_learning_curves_importances(result_dirs, csv_reader, vulnerable_classes
             # model.fit(X, y)
             if missing_ccs_fin:
                 models_missing_ccs_fin[label] = model
-                models_missing_ccs_fin[label + '1'] = model
-                models_missing_ccs_fin[label + '2'] = model
             else:
                 models_ccs_fin[label] = model
         if len(estimators) != 0 and plotlr:
