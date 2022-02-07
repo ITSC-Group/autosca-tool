@@ -1,7 +1,7 @@
 #! /bin/bash
 REPETITIONS=2000
 DATASET_FOLDER="/home/datasets"
-SCAN_LIST="alexa/alexatop1m.csv"
+SCAN_LIST="experiments/alexa/alexatop1m.csv"
 BEGIN_INDEX=1
 END_INDEX=1000
 
