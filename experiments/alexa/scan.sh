@@ -1,9 +1,9 @@
 #! /bin/bash
-REPETITIONS=500
+REPETITIONS=2000
 DATASET_FOLDER="/home/datasets"
 SCAN_LIST="alexa/alexatop1m.csv"
 BEGIN_INDEX=1
-END_INDEX=500
+END_INDEX=1000
 
 FOLDER="$DATASET_FOLDER/$(date --iso-8601)-alexa-$END_INDEX"
 echo "Creating dataset folder $FOLDER"
@@ -59,7 +59,7 @@ run_with_lock(){
     )&
 }
 
-N=1
+N=4
 open_sem $N
 while IFS=, read -r INDEX DOMAIN; do
     run_with_lock scan_domain "$INDEX" "$DOMAIN"
