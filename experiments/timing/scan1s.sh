@@ -1,35 +1,38 @@
 #! /bin/bash
-REPETITIONS=2
 DATASET_FOLDER="/home/datasets"
 BEGIN_INDEX=1
-INDEX_AMOUNT=50
-DOMAIN="imitation-server:7.2"
+REPETITIONS=50
+SUT_IMAGE="apollolv/damnvulnerableopenssl-server:delay1000ms"
+ANALYSIS_IMAGE="itscgroup/autosca-analysis:latest"
 
-FOLDER="$DATASET_FOLDER/$(date --iso-8601)-1sdelay-$INDEX_AMOUNT"
-echo "Creating dataset folder $FOLDER"
-mkdir -p "$FOLDER"
+PARENT_FOLDER="$DATASET_FOLDER/$(date --iso-8601)-delay1000ms-$REPETITIONS"
+echo "Creating dataset folder $PARENT_FOLDER"
+mkdir -p "$PARENT_FOLDER"
 
-scan_domain(){
-        INDEX=$1
-        SUMMARY="$FOLDER/Summary.md"
-        echo "Executing scan number $INDEX";
-        ./start.sh --name $DOMAIN --tag $INDEX --docker --tlsattacker --port 44505 --datasetfolder $FOLDER --clientarguments "--repetitions $REPETITIONS --noskip --wait 1500" --serverarguments "--configFile=/config/base.conf --configFile=/config/time_delay_1s.conf"
+scan_container(){
+    INDEX=$1
+    SUMMARY_FILE="$PARENT_FOLDER/Summary.md"
+    CHILD_FOLDER="$PARENT_FOLDER/$INDEX"
+    mkdir -p "$CHILD_FOLDER"
+    echo "Executing scan number $INDEX";
+    ./generate_docker_dataset.sh --image $SUT_IMAGE --port 44505 --folder $CHILD_FOLDER --clientarguments "--repetitions 2000 --noskip"
+    docker run -it --mount type=bind,source=$DATASET_FOLDER,target=$DATASET_FOLDER ANALYSIS_IMAGE --folder $CHILD_FOLDER
 
-        echo -e "\n\n# $INDEX $DOMAIN" >> "$SUMMARY"
-        if [ -f "$FOLDER/$INDEX$DOMAIN/Report.txt" ]; then
-            cat "$FOLDER/$INDEX$DOMAIN/Report.txt" >> "$SUMMARY"
+    echo -e "\n\n# $INDEX $DOMAIN" >> "$SUMMARY_FILE"
+    if [ -f "$CHILD_FOLDER/Report.txt" ]; then
+        cat "$CHILD_FOLDER/Report.txt" >> "$SUMMARY_FILE"
 
-        elif [ -f "$FOLDER/$INDEX$DOMAIN/TLS Attacker.log" ]; then
-            echo "## TLS Attacker Log" >> "$SUMMARY"
-            head -n 2 "$FOLDER/$INDEX$DOMAIN/TLS Attacker.log" >> "$SUMMARY"
-            if [ -f "$FOLDER/$INDEX$DOMAIN/Classification Model Training.log" ]; then
-                echo "## Classification Model Training Log" >> "$SUMMARY"
-                tail -n 3 "$FOLDER/$INDEX$DOMAIN/Classification Model Training.log" >> "$SUMMARY"
-            fi
-
-        else
-            echo "Experiment crashed, no output files found" >> "$SUMMARY"
+    elif [ -f "$CHILD_FOLDER/TLS Attacker.log" ]; then
+        echo "## TLS Attacker Log" >> "$SUMMARY_FILE"
+        head -n 2 "$CHILD_FOLDER/TLS Attacker.log" >> "$SUMMARY_FILE"
+        if [ -f "$CHILD_FOLDER/Classification Model Training.log" ]; then
+            echo "## Classification Model Training Log" >> "$SUMMARY_FILE"
+            tail -n 3 "$CHILD_FOLDER/Classification Model Training.log" >> "$SUMMARY_FILE"
         fi
+
+    else
+        echo "Experiment crashed, no output files found" >> "$SUMMARY_FILE"
+    fi
 }
 
 # initialize a semaphore with a given number of tokens
@@ -55,12 +58,12 @@ run_with_lock(){
     )&
 }
 
-N=1
+N=1 # Number of semaphores, equivalent to the number of parallel executions of the scan
 open_sem $N
-x=1
-while [ $x -le $INDEX_AMOUNT ]
+x=$BEGIN_INDEX
+while [ $x -le $REPETITIONS ]
 do
-    run_with_lock scan_domain "$x"
+    run_with_lock scan_container "$x"
     x=$(( $x + 1 ))
 done
 
