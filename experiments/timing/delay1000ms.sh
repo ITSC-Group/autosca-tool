@@ -15,7 +15,7 @@ scan_container(){
     CHILD_FOLDER="$PARENT_FOLDER/$INDEX"
     mkdir -p "$CHILD_FOLDER"
     echo "Executing scan number $INDEX";
-    ./generate_docker_dataset.sh --image $SUT_IMAGE --port 44505 --folder $CHILD_FOLDER --clientarguments "--repetitions 2000 --noskip"
+    ./generate_docker_dataset.sh --image $SUT_IMAGE --port 44505 --folder $CHILD_FOLDER --clientarguments "--repetitions 2000 --noskip --timeout 1050"
     docker run -it --mount type=bind,source=$DATASET_FOLDER,target=$DATASET_FOLDER ANALYSIS_IMAGE --folder $CHILD_FOLDER
 
     echo -e "\n\n# $INDEX $DOMAIN" >> "$SUMMARY_FILE"
