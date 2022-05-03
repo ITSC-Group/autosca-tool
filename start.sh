@@ -172,7 +172,7 @@ echo "You may need to use the noroot.sh script to allow non-root users to do tha
 echo "## Capturing network traffic" >> "$CONFIG"
 echo "From and to $CAPTURE_HOST" >> "$CONFIG"
 echo "On interface $SUT_INTERFACE" >> "$CONFIG"
-tcpdump host "$CAPTURE_HOST" -U -w "$FOLDER/Packets.pcap" -i $SUT_INTERFACE &
+tcpdump host "$CAPTURE_HOST" --packet-buffered --time-stamp-precision=nano -w "$FOLDER/Packets.pcap" --interface=$SUT_INTERFACE &
 TCPDUMP_PID=$!
 
 if [ "$LATENCY" ]; then
