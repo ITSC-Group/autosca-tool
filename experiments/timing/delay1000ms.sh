@@ -16,7 +16,7 @@ scan_container(){
     mkdir -p "$CHILD_FOLDER"
     echo "Executing scan number $INDEX";
     ./generate_docker_dataset.sh --image $SUT_IMAGE --port 44505 --folder $CHILD_FOLDER --clientarguments "--repetitions 2000 --noskip --timeout 1050"
-    docker run -it --mount type=bind,source=$DATASET_FOLDER,target=$DATASET_FOLDER ANALYSIS_IMAGE --folder $CHILD_FOLDER
+    docker run --mount type=bind,source=$DATASET_FOLDER,target=$DATASET_FOLDER $ANALYSIS_IMAGE --folder $CHILD_FOLDER
 
     echo -e "\n\n# $INDEX $DOMAIN" >> "$SUMMARY_FILE"
     if [ -f "$CHILD_FOLDER/Report.txt" ]; then
