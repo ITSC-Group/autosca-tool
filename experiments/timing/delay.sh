@@ -1,11 +1,13 @@
 #! /bin/bash
+# How to execute this script: ./experiments/timing/delay.sh 1ms
 DATASET_FOLDER="/home/datasets"
+DELAY_AMOUNT=$1
 BEGIN_INDEX=1
 REPETITIONS=50
-SUT_IMAGE="apollolv/damnvulnerableopenssl-server:delay1ms"
+SUT_IMAGE="apollolv/damnvulnerableopenssl-server:delay$DELAY_AMOUNT"
 ANALYSIS_IMAGE="itscgroup/autosca-analysis:latest"
 
-PARENT_FOLDER="$DATASET_FOLDER/$(date --iso-8601)-delay1ms-$REPETITIONS"
+PARENT_FOLDER="$DATASET_FOLDER/$(date --iso-8601)-delay$DELAY_AMOUNT-$REPETITIONS"
 echo "Creating dataset folder $PARENT_FOLDER"
 mkdir -p "$PARENT_FOLDER"
 
