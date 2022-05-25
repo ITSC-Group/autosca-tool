@@ -210,6 +210,8 @@ echo "Client finished, execution took $DURATION seconds"
 echo "## Execution Time" >> "$CONFIG"
 echo "$DURATION seconds" >> "$CONFIG"
 
+cd "$TOOL_FOLDER"
+
 echo "Stopping network capture"
 sleep 1s
 # shellcheck disable=SC2086
