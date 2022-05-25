@@ -15,7 +15,7 @@ set -e
 
 usage()
 {
-    echo 'usage example: ./generate_docker_dataset.sh --image apollolv/damnvulnerableopenssl-server --port 44701 --folder $HOME/datasets --clientarguments "--repetitions 2000 --noskip"'
+    echo 'usage example: ./generate_docker_dataset.sh --image apollolv/damnvulnerableopenssl-server --port 44701 --folder $HOME/experiment1 --clientarguments "--repetitions 2000 --noskip"'
 }
 
 ALL_PARAMETERS=$*
@@ -26,6 +26,8 @@ while [ "$1" != "" ]; do
                                 SUT_NAME="$1"
                                 ;;
         --tlsattacker )         USE_TLS_ATTACKER=1
+                                ;;
+        --tlstesttool )         USE_TLS_ATTACKER=0
                                 ;;
         --port )                shift
                                 SUT_PORT=$1
