@@ -260,7 +260,7 @@ echo "Generating report"
 pipenv run python3 classification_model/pvalues_calculation.py --folder="$FOLDER" 2>&1 | tee "$FOLDER/Report Generation.log"
 
 echo "Plotting the machine learning results"
-pipenv run python3 classification_model/plot_results.py --folder="$FOLDER" --cv_iterations=$CROSSVALIDATION_ITERATIONS 2>&1 | tee "$FOLDER/Classification Model Plotting.log"
+pipenv run python3 classification_model/plot_results.py --folder="$FOLDER" 2>&1 | tee "$FOLDER/Classification Model Plotting.log"
 echo "Finished plotting"
 echo " " >> "$CONFIG"
 
