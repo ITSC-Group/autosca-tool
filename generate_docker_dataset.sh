@@ -15,7 +15,7 @@ set -e
 
 usage()
 {
-    echo 'usage example: ./start.sh --tlsattacker --image apollolv/damnvulnerableopenssl-server --folder /home/datasets/2021-12-20-apollolvdamnvulnerableopenssl-server --clientarguments "--repetitions 200 --noskip"'
+    echo 'usage example: ./generate_docker_dataset.sh --image apollolv/damnvulnerableopenssl-server --port 44701 --folder $HOME/datasets --clientarguments "--repetitions 2000 --noskip"'
 }
 
 ALL_PARAMETERS=$*
