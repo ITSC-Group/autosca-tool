@@ -230,8 +230,7 @@ echo "Starting feature extraction"
 echo " " >> "$CONFIG"
 echo "# Feature Extraction" >> "$CONFIG"
 START_TIME=$(date +%s)
-cd "$TOOL_FOLDER/feature_extraction" || exit
-pipenv run python3 extract.py --folder="$FOLDER" 2>&1 | tee "$FOLDER/Feature Extraction.log"
+pipenv run python3 feature_extraction/extract.py --folder="$FOLDER" 2>&1 | tee "$FOLDER/Feature Extraction.log"
 END_TIME=$(date +%s)
 DURATION="$(($END_TIME-$START_TIME))"
 echo "Finished feature extraction, execution took $DURATION seconds"
@@ -239,7 +238,6 @@ echo "## Execution Time" >> "$CONFIG"
 echo "$DURATION seconds" >> "$CONFIG"
 
 echo "Starting classification model training"
-cd "$TOOL_FOLDER/classification_model" || exit
 echo " " >> "$CONFIG"
 echo "# Machine Learning" >> "$CONFIG"
 echo "## Parameters" >> "$CONFIG"
@@ -248,7 +246,7 @@ echo "Doing $CROSSVALIDATION_ITERATIONS crossvalidation iterations" >> "$CONFIG"
 echo "Doing $HYPERPARAMETER_ITERATIONS hyperparameter optimization iterations" >> "$CONFIG"
 
 START_TIME=$(date +%s)
-pipenv run python3 train_models.py --folder="$FOLDER" --cv_technique=$CROSSVALIDATION_TECHNIQUE --cv_iterations=$CROSSVALIDATION_ITERATIONS --iterations=$HYPERPARAMETER_ITERATIONS --n_jobs=$PARALLEL_THREADS 2>&1 | tee "$FOLDER/Classification Model Training.log"
+pipenv run python3 classification_model/train_models.py --folder="$FOLDER" --cv_technique=$CROSSVALIDATION_TECHNIQUE --cv_iterations=$CROSSVALIDATION_ITERATIONS --iterations=$HYPERPARAMETER_ITERATIONS --n_jobs=$PARALLEL_THREADS 2>&1 | tee "$FOLDER/Classification Model Training.log"
 END_TIME=$(date +%s)
 DURATION="$(($END_TIME-$START_TIME))"
 echo "Finished classification model training, execution took $DURATION seconds"
@@ -257,10 +255,10 @@ echo "$DURATION seconds" >> "$CONFIG"
 
 
 echo "Generating report"
-pipenv run python3 pvalues_calculation.py --folder="$FOLDER" 2>&1 | tee "$FOLDER/Report Generation.log"
+pipenv run python3 classification_model/pvalues_calculation.py --folder="$FOLDER" 2>&1 | tee "$FOLDER/Report Generation.log"
 
 echo "Plotting the machine learning results"
-pipenv run python3 plot_results.py --folder="$FOLDER" --cv_iterations=$CROSSVALIDATION_ITERATIONS 2>&1 | tee "$FOLDER/Classification Model Plotting.log"
+pipenv run python3 classification_model/plot_results.py --folder="$FOLDER" --cv_iterations=$CROSSVALIDATION_ITERATIONS 2>&1 | tee "$FOLDER/Classification Model Plotting.log"
 echo "Finished plotting"
 echo " " >> "$CONFIG"
 
