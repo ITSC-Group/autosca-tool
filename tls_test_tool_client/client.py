@@ -52,9 +52,9 @@ def run_single_session(request_index: int, sut_name: str, use_sentinel: bool, wa
     if skip_ccs_fin:
         config_files.append('./config/skip_change_cipher_spec_and_finished.conf')
     if use_sentinel:
-        call_array = ['./TlsTestToolSentinel']
+        call_array = ['./tls_test_tool_client/TlsTestToolSentinel']
     else:
-        call_array = ['./TlsTestTool']
+        call_array = ['./tls_test_tool_client/TlsTestTool']
     print(f'Starting client {request_index} with test case {current_case}{", skipping CCS&FIN" if skip_ccs_fin else ""}')
     call_array.extend([f'--configFile={config_file}' for config_file in config_files])
 
