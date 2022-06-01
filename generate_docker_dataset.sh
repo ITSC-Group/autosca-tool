@@ -126,7 +126,7 @@ fi
 if [ "$USE_TLS_ATTACKER" = "0" ]; then
     echo "Starting TLS client using the achelos TLS Test Tool"
     # shellcheck disable=SC2086
-    CLIENT_COMMAND="pipenv run cd tls_test_tool_client && python3 client.py --folder=\"$FOLDER\" --name=$SANITIZED_SUT_NAME $CLIENT_ARGUMENTS 2>&1 | tee \"$FOLDER/TLS Test Tool Client.log\""
+    CLIENT_COMMAND="pipenv run python3 tls_test_tool_client/client.py --folder=\"$FOLDER\" --name=$SANITIZED_SUT_NAME $CLIENT_ARGUMENTS 2>&1 | tee \"$FOLDER/TLS Test Tool Client.log\""
 else
     echo "Starting TLS client using the RUB TLS Attacker"
     # shellcheck disable=SC2086

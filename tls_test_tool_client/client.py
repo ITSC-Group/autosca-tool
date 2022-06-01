@@ -18,8 +18,8 @@ def determine_client_hello_random(log: str) -> str:
 
 
 def run_single_session(request_index: int, sut_name: str, use_sentinel: bool, wait_time: float, enable_skip_ccs_fin: bool, enable_noskip_ccs_fin: bool, twoclass: bool, oneclass: bool) -> (str, str, bool):
-    config_files = ['./config/base.conf',
-                    f'./config/{sut_name}.conf']
+    config_files = ['./tls_test_tool_client/config/base.conf',
+                    f'./tls_test_tool_client/config/{sut_name}.conf']
     if enable_skip_ccs_fin:
         if enable_noskip_ccs_fin:
             # Coin flip
@@ -48,13 +48,13 @@ def run_single_session(request_index: int, sut_name: str, use_sentinel: bool, wa
                       'Wrong_separator_position_(44)']
 
     current_case = choice(test_cases)
-    config_files.append(f'./config/{current_case}.conf')
+    config_files.append(f'./tls_test_tool_client/config/{current_case}.conf')
     if skip_ccs_fin:
-        config_files.append('./config/skip_change_cipher_spec_and_finished.conf')
+        config_files.append('./tls_test_tool_client/config/skip_change_cipher_spec_and_finished.conf')
     if use_sentinel:
-        call_array = ['./TlsTestToolSentinel']
+        call_array = ['./tls_test_tool_client/TlsTestToolSentinel']
     else:
-        call_array = ['./TlsTestTool']
+        call_array = ['./tls_test_tool_client/TlsTestTool']
     print(f'Starting client {request_index} with test case {current_case}{", skipping CCS&FIN" if skip_ccs_fin else ""}')
     call_array.extend([f'--configFile={config_file}' for config_file in config_files])
 
