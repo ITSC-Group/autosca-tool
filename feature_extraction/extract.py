@@ -5,8 +5,8 @@ from state_machine import StateMachine
 from state_machine import State
 
 from pyshark.packet.packet import Packet
-from pyshark.packet.layer import Layer
 from pyshark.packet.fields import LayerFieldsContainer
+from pyshark.packet.layers.base import BaseLayer
 
 import pandas
 
@@ -95,7 +95,7 @@ class FeatureExtractor:
             packet_column_names.update(tls_column_names)
         return packet_extracted_values, packet_column_names
 
-    def extract_layer_values(self, layer: Layer, machine_packet_name: str, human_packet_name: str) -> (dict, Dict[str, str]):
+    def extract_layer_values(self, layer: BaseLayer, machine_packet_name: str, human_packet_name: str) -> (dict, Dict[str, str]):
         # Ignore these, they are not interesting for the ML algorithm
         field_ignorelist = ['_raw', '.analysis.', 'time']
         extracted_fields = {}
@@ -124,7 +124,7 @@ class FeatureExtractor:
         return extracted_fields, extracted_names
 
     @staticmethod
-    def get_human_description(field_value: LayerFieldsContainer, layer: Layer, machine_field_name: str,
+    def get_human_description(field_value: LayerFieldsContainer, layer: BaseLayer, machine_field_name: str,
                               human_packet_name: str) -> str:
         human_field_name = field_value.showname_key
         if type(human_field_name) is not str:
