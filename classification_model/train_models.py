@@ -96,7 +96,7 @@ if __name__ == "__main__":
         elif csv_reader.minimum_instances > cv_iterations * 3:
             cv_iterator = StratifiedShuffleSplit(n_splits=cv_iterations, test_size=test_size, random_state=random_state)
         else:
-            raise ValueError('Number of instances per class should be greater than {}'.format(cv_iterations * 3))
+            raise ValueError(f'The number of instances per class ({csv_reader.minimum_instances} in this dataset) should be greater than {cv_iterations * 3}. Try increasing the number of handshakes done by the client.')
     else:
         raise ValueError('Cross-Validation technique is does not exist should be {} or {} or {}'.format(*cv_choices))
     logger.info('The selected Cross-Validation technique is {}'.format(cv_iterator))
