@@ -25,6 +25,8 @@ __all__ = ['fig_param', 'colors', 'bar_grid_for_dataset', 'classwise_barplot_for
 
 colors = ['black', 'black', 'black', 'indigo', 'blueviolet', 'mediumorchid', 'plum', 'mediumblue', 'firebrick',
           'darkorange', 'sandybrown', 'darkgoldenrod', 'gold', 'khaki']
+INDICIES_CLASSIFIERS_POSITIONS = [3, 3, 1, 2, 2, 2]
+
 logger = logging.getLogger("Plotting")
 
 pgf_with_latex = {  # setup matplotlib to use latex for output
@@ -77,7 +79,7 @@ def init_plots(df, extension, metric, figsize):
     bar_width_offset = bar_width + offset
     space = 0.3
     index = []
-    for i in [3, 3, 1, 1, 2, 2, 2]:
+    for i in INDICIES_CLASSIFIERS_POSITIONS:
         if len(index) == 0:
             index.extend(list(np.arange(1, i + 1) * bar_width_offset))
         else:

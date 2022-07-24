@@ -17,7 +17,7 @@ custom_dict = {RandomClassifier.__name__: 0,
                RidgeClassifier.__name__: 5,
 
                LinearSVC.__name__: 6,
-               # MultiLayerPerceptron.__name__: 7,
+               #MultiLayerPerceptron.__name__: 7,
 
                DecisionTreeClassifier.__name__: 8,
                ExtraTreeClassifier.__name__: 9,
