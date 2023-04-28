@@ -9,6 +9,7 @@ USE_TLS_ATTACKER=1
 CLIENT_ARGUMENTS=""
 SERVER_ARGUMENTS=""
 DOCKER_ARGUMENTS=""
+DOCKER_CONTAINER_NAME=""
 FOLDER="/home/datasets/$(date --iso-8601)-unnamed"
 
 set -e
@@ -44,6 +45,9 @@ while [ "$1" != "" ]; do
         --dockerarguments )     shift
                                 DOCKER_ARGUMENTS=$1
                                 ;;
+        --dockercontainername ) shift
+                                DOCKER_CONTAINER_NAME=$1
+                                ;;
         -h | --help )           usage
                                 exit
                                 ;;
@@ -60,7 +64,7 @@ cd "$FOLDER" || exit
 
 echo "Creating setup file"
 CONFIG="$FOLDER/config.md"
-echo "# Experiment $SANITIZED_SUT_NAME" > "$CONFIG"
+echo "# Experiment $TEST_TOOL_CONFIG_FILE_NAME" > "$CONFIG"
 echo "## Date" >> "$CONFIG"
 date >> "$CONFIG"
 echo "## Host" >> "$CONFIG"
@@ -78,21 +82,23 @@ echo "on branch $(git rev-parse --abbrev-ref HEAD)" >> "$CONFIG"
 echo "" >> "$CONFIG"
 echo "# Dataset generation" >> "$CONFIG"
 
-SANITIZED_SUT_NAME=$(echo "$SUT_NAME" | tr -dc '[:alnum:]._-')
+if [ -z "${DOCKER_CONTAINER_NAME}" ]; then
+    DOCKER_CONTAINER_NAME=$(echo "$SUT_NAME" | tr -dc '[:alnum:]._-')
+fi
 echo "Starting system under test (SUT) docker image $SUT_NAME"
-if [ "$(docker ps -aq -f name=$SANITIZED_SUT_NAME)" ]; then
+if [ "$(docker ps -aq -f name=$DOCKER_CONTAINER_NAME)" ]; then
     echo "Cleaning up a container from a previous run"
-    docker stop "$SANITIZED_SUT_NAME"
+    docker stop "$DOCKER_CONTAINER_NAME"
 fi
 # shellcheck disable=SC2086
-DOCKER_COMMAND="docker run -it --rm -d --name=$SANITIZED_SUT_NAME -p $SUT_PORT:4433 $DOCKER_ARGUMENTS $SUT_NAME $SERVER_ARGUMENTS"
+DOCKER_COMMAND="docker run -it --rm -d --name=$DOCKER_CONTAINER_NAME -p $SUT_PORT:4433 $DOCKER_ARGUMENTS $SUT_NAME $SERVER_ARGUMENTS"
 echo "## Docker Command" >> "$CONFIG"
 echo "$DOCKER_COMMAND" >> "$CONFIG"
 $DOCKER_COMMAND
-docker logs -f $SANITIZED_SUT_NAME 2>&1 | tee "$FOLDER/Docker Server.log" &
+docker logs -f $DOCKER_CONTAINER_NAME 2>&1 | tee "$FOLDER/Docker Server.log" &
 DOCKERLOG_PID=$!
 
-CAPTURE_HOST=$(docker inspect -f '{{ .NetworkSettings.IPAddress }}' "$SANITIZED_SUT_NAME")
+CAPTURE_HOST=$(docker inspect -f '{{ .NetworkSettings.IPAddress }}' "$DOCKER_CONTAINER_NAME")
 SUT_HOST="localhost"
 if [ "$CAPTURE_HOST" = "" ]; then
     echo "Docker container crashed, ABORTING"
@@ -104,8 +110,9 @@ echo "## Server Hostname/IP and Port" >> "$CONFIG"
 echo "$SUT_HOST:$SUT_PORT" >> "$CONFIG"
 
 if [ "$USE_TLS_ATTACKER" = "0" ]; then
-    echo "port=$SUT_PORT" > "$TOOL_FOLDER/tls_test_tool_client/config/$SANITIZED_SUT_NAME.conf"
-    echo "host=$SUT_HOST" >> "$TOOL_FOLDER/tls_test_tool_client/config/$SANITIZED_SUT_NAME.conf"
+    TEST_TOOL_CONFIG_FILE_NAME=$(echo "$SUT_NAME" | tr -dc '[:alnum:]._-')
+    echo "port=$SUT_PORT" > "$TOOL_FOLDER/tls_test_tool_client/config/$TEST_TOOL_CONFIG_FILE_NAME.conf"
+    echo "host=$SUT_HOST" >> "$TOOL_FOLDER/tls_test_tool_client/config/$TEST_TOOL_CONFIG_FILE_NAME.conf"
 fi
 
 echo "Starting packet capture on the default docker interface $SUT_INTERFACE"
@@ -118,7 +125,7 @@ echo "On interface $SUT_INTERFACE" >> "$CONFIG"
 tcpdump host "$CAPTURE_HOST" -U -w "$FOLDER/Packets.pcap" -i $SUT_INTERFACE &
 TCPDUMP_PID=$!
 
-if docker ps -q | grep -q "$SANITIZED_SUT_NAME"; then
+if docker ps -q | grep -q "$DOCKER_CONTAINER_NAME"; then
     echo "Docker container crashed, ABORTING"
     exit 1
 fi
@@ -126,7 +133,7 @@ fi
 if [ "$USE_TLS_ATTACKER" = "0" ]; then
     echo "Starting TLS client using the achelos TLS Test Tool"
     # shellcheck disable=SC2086
-    CLIENT_COMMAND="pipenv run python3 tls_test_tool_client/client.py --folder=\"$FOLDER\" --name=$SANITIZED_SUT_NAME $CLIENT_ARGUMENTS 2>&1 | tee \"$FOLDER/TLS Test Tool Client.log\""
+    CLIENT_COMMAND="pipenv run python3 tls_test_tool_client/client.py --folder=\"$FOLDER\" --name=$TEST_TOOL_CONFIG_FILE_NAME $CLIENT_ARGUMENTS 2>&1 | tee \"$FOLDER/TLS Test Tool Client.log\""
 else
     echo "Starting TLS client using the RUB TLS Attacker"
     # shellcheck disable=SC2086
@@ -150,7 +157,7 @@ sleep 1s
 kill -2 $TCPDUMP_PID
 
 echo "Stopping system under test docker container"
-docker stop "$SANITIZED_SUT_NAME"
+docker stop "$DOCKER_CONTAINER_NAME"
 # kill -2 $DOCKERLOG_PID
 
 echo "Dataset generation finished" >> "$CONFIG"
