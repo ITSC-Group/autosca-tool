@@ -95,7 +95,6 @@ DOCKER_COMMAND="docker run -it --rm -d --name=$DOCKER_CONTAINER_NAME -p $SUT_POR
 echo "## Docker Command" >> "$CONFIG"
 echo "$DOCKER_COMMAND" >> "$CONFIG"
 $DOCKER_COMMAND
-docker logs -f $DOCKER_CONTAINER_NAME 2>&1 | tee "$FOLDER/Docker Server.log" &
 DOCKERLOG_PID=$!
 
 CAPTURE_HOST=$(docker inspect -f '{{ .NetworkSettings.IPAddress }}' "$DOCKER_CONTAINER_NAME")
