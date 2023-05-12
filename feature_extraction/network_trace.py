@@ -6,7 +6,7 @@ from pyshark.packet.packet import Packet
 
 
 class IterableCapture:
-    def __init__(self, capture_path: str, slice_size: int = 1000):
+    def __init__(self, capture_path: str, slice_size: int = 10000):
         self.capture_path = capture_path
         print(f'Loading {self.capture_path}')
         self.slice_size = slice_size
